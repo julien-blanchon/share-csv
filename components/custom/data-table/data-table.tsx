@@ -79,8 +79,10 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedUniqueValues: (table: TTable<TData>, columnId: string) => () => {
       const map = getFacetedUniqueValues<TData>()(table, columnId)();
-      // TODO: it would be great to do it dynamically, if we recognize the row to be Array.isArray
-      if (["regions", "tags"].includes(columnId)) {
+      const isColumnArray = data.some((row) =>
+        Array.isArray(row[columnId as keyof TData])
+      );
+      if (isColumnArray) {
         const rowValues = table
           .getGlobalFacetedRowModel()
           .flatRows.map((row) => row.getValue(columnId) as string[]);

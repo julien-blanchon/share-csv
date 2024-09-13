@@ -22,7 +22,6 @@ import type { DataTableFilterField } from "../types";
 import { deserialize, serializeColumFilters } from "../utils";
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
 import { useRouter } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
 import {
   getFieldOptions,
   getFieldValueByType,
@@ -367,13 +366,6 @@ export function DataTableFilterCommand<TData, TSchema extends z.AnyZodObject>({
                 </span>
                 <span>
                   <Kbd className="bg-background">Esc</Kbd> to close
-                </span>
-                <Separator orientation="vertical" className="my-auto h-3" />
-                <span>
-                  Union: <Kbd className="bg-background">regions:a,b</Kbd>
-                </span>
-                <span>
-                  Range: <Kbd className="bg-background">p95:59-340</Kbd>
                 </span>
               </div>
               {lastSearches.length ? (

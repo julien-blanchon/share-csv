@@ -26,6 +26,7 @@ const stringToBoolean = z
 export const columnSchema = z.object({
   name: z.string(),
   url: z.string(),
+  url2: z.string(),
   // p75
   p95: z.number().optional(),
   // p99
@@ -37,6 +38,20 @@ export const columnSchema = z.object({
 });
 
 export type ColumnSchema = z.infer<typeof columnSchema>;
+
+export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags";
+
+export const columnType: Record<keyof ColumnSchema, ColumnType> = {
+  name: "string",
+  url: "url",
+  url2: "url",
+  p95: "number",
+  public: "boolean",
+  active: "boolean",
+  regions: "string",
+  tags: "tags",
+  date: "date",
+};
 
 // or could rename to `urlParamsSchema`
 export const columnFilterSchema = z.object({

@@ -1,12 +1,13 @@
 "use client";
 
-import { columns } from "@/components/custom/fancy-data-table/columns";
+import { columns } from "@/components/custom/data-table/columns";
 import {
   data,
   filterFields,
-} from "@/components/custom/fancy-data-table/constants";
-import { DataTable } from "@/components/custom/fancy-data-table/data-table";
-import { columnFilterSchema } from "@/components/custom/fancy-data-table/schema";
+} from "@/components/custom/data-table/constants";
+import { DataTable } from "@/components/custom/data-table/data-table";
+import { columnFilterSchema } from "@/components/custom/data-table/schema";
+import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 
 export default function Page({
@@ -25,15 +26,22 @@ export default function Page({
     return null;
   }
 
+
+
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      filterFields={filterFields}
-      defaultColumnFilters={Object.entries(search.data).map(([key, value]) => ({
-        id: key,
-        value,
-      }))}
-    />
+    <>
+      <div className="mb-4">
+        <Textarea placeholder="Copy your csv here" />
+      </div>
+      <DataTable
+        columns={columns}
+        data={data}
+        filterFields={filterFields}
+        defaultColumnFilters={Object.entries(search.data).map(([key, value]) => ({
+          id: key,
+          value,
+        }))}
+      />
+    </>
   );
 }
