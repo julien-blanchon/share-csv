@@ -32,14 +32,17 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { type User as UserSupabase } from "@/types/user"
 
-export function AvatarDropdown() {
+export function AvatarDropdown({ user }: { user: UserSupabase }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>
+            {user.email.slice(0, 1).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">

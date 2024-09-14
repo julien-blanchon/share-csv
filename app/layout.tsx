@@ -27,22 +27,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
         <div className="flex min-h-screen flex-col">
           {/* Render SidebarWrapper to handle client-side logic */}
           <SidebarWrapper>
+            <Header />
             <main
               className={cn(
                 "container mx-auto flex min-h-screen flex-col gap-4 px-2 py-4 md:px-4 md:py-8"
               )}
             >
               {children}
-              <Badge
-                variant="outline"
-                className="absolute -top-2.5 left-4 bg-background sm:left-8"
-              >
-                Work in progress
-              </Badge>
             </main>
           </SidebarWrapper>
           <footer>
