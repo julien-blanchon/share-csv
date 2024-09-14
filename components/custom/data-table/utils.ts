@@ -3,6 +3,7 @@ import type { ColumnFiltersState } from "@tanstack/react-table";
 import { z } from "zod";
 import type { DataTableFilterField } from "./types";
 import { ARRAY_DELIMITER, RANGE_DELIMITER, SLIDER_DELIMITER } from "./schema";
+import Papa from "papaparse";
 
 export function deserialize<T extends z.AnyZodObject>(schema: T) {
   const castToSchema = z.preprocess((val) => {
@@ -19,6 +20,17 @@ export function deserialize<T extends z.AnyZodObject>(schema: T) {
   }, schema);
   return (value: string) => castToSchema.safeParse(value);
 }
+
+export const parseCSV: (input: string) => Record<string, unknown>[] = (input: string) => {
+  // Parse the input using PapaParse, or any library of your choice
+  const parsed = Papa.parse(input, {
+    header: true, // Treat first row as header
+    skipEmptyLines: true,
+    dynamicTyping: true,
+  });
+  return parsed.data; // Parsed data as array of objects
+};
+
 
 // export function serialize<T extends z.AnyZodObject>(schema: T) {
 //   return (value: z.infer<T>) =>

@@ -3,13 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Check, Minus } from "lucide-react";
-import { ColumnType, columnType, type ColumnSchema } from "./schema";
-// import { isArrayOfDates, isArrayOfNumbers } from "./utils";
+import { ColumnDefinitionType, ColumnType } from "./schema";
 // import { DataTableColumnHeader } from "./data-table-column-header";
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import { generateColorFromName } from "./constants";
+import { DataTableColumnHeader } from "./data-table-column-header";
 
 
+// type CellConfig = ColumnDef<string>["cell"]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cellRenderers: Record<ColumnType, (value: any) => JSX.Element> = {
   string: (value) => <span>{value}</span>,
@@ -21,59 +22,73 @@ const cellRenderers: Record<ColumnType, (value: any) => JSX.Element> = {
     <div className="flex flex-wrap gap-1">
       {Array.isArray(value)
         ? value.map((v) => (
-            <Badge
-              key={v}
-              variant="outline"
-              className="border-inherit text-xs"
-              style={{
-                color: generateColorFromName(v, 1),
-                backgroundColor: generateColorFromName(v, 0.1),
-                borderColor: generateColorFromName(v, 0.2),
-              }}
-            >
-              {v}
-            </Badge>
-          ))
-        : value}
+          <Badge
+            key={v}
+            variant="outline"
+            className="border-inherit text-xs"
+            style={{
+              color: generateColorFromName(v, 1),
+              backgroundColor: generateColorFromName(v, 0.1),
+              borderColor: generateColorFromName(v, 0.2),
+            }}
+          >
+            {v}
+          </Badge>
+        ))
+        : <Badge
+          variant="outline"
+          style={{
+            color: generateColorFromName(value, 1),
+            backgroundColor: generateColorFromName(value, 0.1),
+            borderColor: generateColorFromName(value, 0.2),
+          }} className="border-inherit text-xs"
+          >{value}</Badge>}
     </div>
   ),
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const filterFns: Record<ColumnType, (row: any, id: string, value: any) => boolean> = {
-  string: (row, id, value) => row.getValue(id).includes(value),
-  number: (row, id, value) => {
-    const rowValue = row.getValue(id);
-    return Array.isArray(value)
-      ? value[0] <= rowValue && rowValue <= value[1]
-      : rowValue === value;
-  },
-  boolean: (row, id, value) => row.getValue(id) === value,
-  date: (row, id, value) => isSameDay(new Date(row.getValue(id)), new Date(value)),
-  url: (row, id, value) => row.getValue(id).includes(value),
-  tags: (row, id, value) => {
-    const array = row.getValue(id);
-    if (typeof value === "string") return array.includes(value);
-    return Array.isArray(value) ? value.some((v) => array.includes(v)) : false;
-  },
+type HeaderConfig = ColumnDef<string>["header"]
+const headerRenderers: Record<ColumnType, (key: string) => HeaderConfig> = {
+  string: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+  number: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+  boolean: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+  date: () => ({ column }) => (
+    <DataTableColumnHeader column={column} title="Date" />
+  ),
+  url: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+  tags: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+};
+
+type filterFn = ColumnDef<string>["filterFn"]
+const filterFns: Record<ColumnType, filterFn> = {
+  string: "auto",
+  number: "auto",
+  boolean: "auto",
+  date: "filterDate" as filterFn,
+  url: "auto",
+  tags: "auto",
 };
 
 // Iterate and dynamically generate columns
-export const columns: ColumnDef<ColumnSchema>[] = Object.keys(columnType).map((key) => {
-  const accessorKey = key as keyof ColumnSchema;
-  const type = columnType[accessorKey];
-  
-  return {
-    accessorKey: key,
-    header: key.charAt(0).toUpperCase() + key.slice(1), // Dynamically generate header from key
-    cell: ({ row }) => {
-      const value = row.getValue(accessorKey);
-      return cellRenderers[type](value);
-    },
-    filterFn: (row, id, value) => filterFns[type](row, id, value),
-  };
-});
-
+export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<string>[] = (columnDefinition) => {
+  console.log('columnDefinition', columnDefinition);
+  const columns: ColumnDef<string>[] = Object.entries(columnDefinition).map(([key, type]) => {
+    console.log('type', type);
+    return {
+      id: key,
+      accessorKey: key,
+      header: headerRenderers[type](key),
+      filterFn: filterFns[type],
+      cell: ({ row }) => {
+        const value = row.getValue(key);
+        return cellRenderers[type](value);
+      },
+      // filterFn: (row, id, value) => filterFns[type](row, id, value),
+    };
+  });
+  console.log('columns', columns);
+  return columns;
+}
 // TODO: Make accessor generic
 // export const columns: ColumnDef<ColumnSchema>[] = [
 //   {

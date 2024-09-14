@@ -4,6 +4,7 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   PaginationState,
+  RowData,
   SortingState,
   Table as TTable,
   VisibilityState,
@@ -31,17 +32,20 @@ import {
 import { DataTableFilterControls } from "./data-table-filter-controls";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableFilterCommand } from "./data-table-filter-command";
-import { columnFilterSchema } from "./schema";
 import type { DataTableFilterField } from "./types";
 import { DataTableToolbar } from "./data-table-toolbar"; // TODO: check where to put this
 import { cn } from "@/lib/utils";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import * as z from "zod";
+import { isArrayOfDates, isArrayOfNumbers } from "./utils";
+import { isSameDay } from "date-fns";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends RowData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   defaultColumnFilters?: ColumnFiltersState;
   filterFields?: DataTableFilterField<TData>[];
+  columnFilterSchema: z.ZodObject<Record<string, z.ZodType>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -49,6 +53,7 @@ export function DataTable<TData, TValue>({
   data,
   defaultColumnFilters = [],
   filterFields = [],
+  columnFilterSchema,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -68,6 +73,40 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     state: { columnFilters, sorting, columnVisibility, pagination },
+    filterFns: { 
+      filterNumber: (row, id, value) => {
+        const rowValue = row.getValue(id) as number;
+        if (typeof value === "number") return value === Number(rowValue);
+        if (Array.isArray(value) && isArrayOfNumbers(value)) {
+          const sorted = value.sort((a, b) => a - b);
+          return sorted[0] <= rowValue && rowValue <= sorted[1];
+        }
+        return false;
+      },
+      filterDate: (row, id, value) => {
+        const rowValue = row.getValue(id);
+        if (value instanceof Date && rowValue instanceof Date) {
+          return isSameDay(value, rowValue);
+        }
+        if (Array.isArray(value)) {
+          if (isArrayOfDates(value) && rowValue instanceof Date) {
+            const sorted = value.sort((a, b) => a.getTime() - b.getTime());
+            return (
+              sorted[0].getTime() <= rowValue.getTime() &&
+              rowValue.getTime() <= sorted[1].getTime()
+            );
+          }
+        }
+        return false;
+      },
+      filterTag: (row, id, value) => {
+        const array = row.getValue(id) as string[];
+        if (typeof value === "string") return array.includes(value);
+        // up to the user to define either `.some` or `.every`
+        if (Array.isArray(value)) return value.some((i) => array.includes(i));
+        return false;
+      },
+    },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,

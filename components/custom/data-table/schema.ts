@@ -1,15 +1,21 @@
+"use client";
 import { z } from "zod";
 
-/** Strings used to separate the URL params */
+/** Delimiters used for URL params */
 export const ARRAY_DELIMITER = ",";
 export const SLIDER_DELIMITER = "-";
 export const SPACE_DELIMITER = "_";
 export const RANGE_DELIMITER = "-";
 
+/** Column types definition */
+export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags";
+export type ColumnDefinitionType = Record<string, ColumnType>;
+
+/** Predefined enums */
 export const REGIONS = ["ams", "gru", "syd", "hkg", "fra", "iad"] as const;
 export const TAGS = ["web", "api", "enterprise", "app"] as const;
 
-// https://github.com/colinhacks/zod/issues/2985#issue-2008642190
+/** Helper function to convert strings to booleans */
 const stringToBoolean = z
   .string()
   .toLowerCase()
@@ -23,87 +29,96 @@ const stringToBoolean = z
   })
   .pipe(z.boolean().optional());
 
-export const columnSchema = z.object({
-  name: z.string(),
-  url: z.string(),
-  url2: z.string(),
-  // p75
-  p95: z.number().optional(),
-  // p99
-  public: z.boolean(),
-  active: z.boolean(),
-  regions: z.enum(REGIONS).array(),
-  tags: z.enum(TAGS).array(),
-  date: z.date(),
-});
-
-export type ColumnSchema = z.infer<typeof columnSchema>;
-
-export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags";
-
-export const columnType: Record<keyof ColumnSchema, ColumnType> = {
-  name: "string",
-  url: "url",
-  url2: "url",
-  p95: "number",
-  public: "boolean",
-  active: "boolean",
-  regions: "string",
-  tags: "tags",
-  date: "date",
+/** Schema factory for each column type */
+const getColumnSchema = (type: ColumnType) => {
+  switch (type) {
+    case "string":
+      return z.string();
+    case "number":
+      return z.number().optional();
+    case "boolean":
+      return z.boolean();
+    case "date":
+      return z.date();
+    case "url":
+      return z.string().url();
+    case "tags":
+      return z.string().array();
+    default:
+      throw new Error(`Unsupported column type: ${type}`);
+  }
 };
 
-// or could rename to `urlParamsSchema`
-export const columnFilterSchema = z.object({
-  url: z.string().optional(),
-  p95: z.coerce
-    .number()
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(SLIDER_DELIMITER))
-        .pipe(z.coerce.number().array().length(2))
+export const createColumnSchema = (columnDefinition: ColumnDefinitionType) => {
+  const schema = z.object(
+    Object.fromEntries(
+      Object.entries(columnDefinition).map(([key, type]) => [
+        key,
+        getColumnSchema(type),
+      ])
     )
-    .optional(), // TBD: we could transform to `{ min: x, max: y}`
-  public: z
-    .string()
-    .transform((val) => val.split(ARRAY_DELIMITER))
-    .pipe(stringToBoolean.array())
-    .optional(),
-  active: z
-    .string()
-    .transform((val) => val.split(ARRAY_DELIMITER))
-    .pipe(stringToBoolean.array())
-    .optional(),
-  regions: z
-    .enum(REGIONS)
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(ARRAY_DELIMITER))
-        .pipe(z.enum(REGIONS).array())
-    )
-    .optional(),
-  tags: z
-    .enum(TAGS)
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(ARRAY_DELIMITER))
-        .pipe(z.enum(TAGS).array())
-    )
-    .optional(),
-  date: z.coerce
-    .number()
-    .pipe(z.coerce.date())
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(RANGE_DELIMITER).map(Number))
-        .pipe(z.coerce.date().array())
-    )
-    .optional(),
-  // .default([subDays(new Date(), -7), new Date()]),
-});
+  );
+  return schema;
+}
 
-export type ColumnFilterSchema = z.infer<typeof columnFilterSchema>;
+/** Schema factory for each column type for filtering */
+const getFilterSchema = (type: ColumnType) => {
+  switch (type) {
+    case "string":
+      return z.string().optional();
+    case "number":
+      return z
+        .coerce
+        .number()
+        .or(
+          z
+            .string()
+            .transform((val) => val.split(SLIDER_DELIMITER))
+            .pipe(z.coerce.number().array().length(2))
+        )
+        .optional();
+    case "boolean":
+      return z
+        .string()
+        .transform((val) => val.split(ARRAY_DELIMITER))
+        .pipe(stringToBoolean.array())
+        .optional();
+    case "date":
+      return z.coerce
+        .number()
+        .pipe(z.coerce.date())
+        .or(
+          z
+            .string()
+            .transform((val) => val.split(RANGE_DELIMITER).map(Number))
+            .pipe(z.coerce.date().array())
+        )
+        .optional();
+    case "url":
+      return z.string().optional();
+    case "tags":
+      return z
+        .enum(TAGS)
+        .or(
+          z
+            .string()
+            .transform((val) => val.split(ARRAY_DELIMITER))
+            .pipe(z.enum(TAGS).array())
+        )
+        .optional();
+    default:
+      throw new Error(`Unsupported column type for filtering: ${type}`);
+  }
+};
+
+export const createFilterSchema = (columnDefinition: ColumnDefinitionType) => {
+  const schema = z.object(
+    Object.fromEntries(
+      Object.entries(columnDefinition).map(([key, type]) => [
+        key,
+        getFilterSchema(type),
+      ])
+    )
+  );
+  return schema;
+}
