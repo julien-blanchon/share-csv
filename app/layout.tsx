@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/custom/header";
-import { SidebarWrapper } from "@/components/custom/side-bar/SidebarWrapper"; // Import new Sidebar wrapper
 import { cn } from "@/lib/utils";
 
 const geistSans = localFont({
@@ -29,16 +28,14 @@ export default function RootLayout({
       >
         <div className="flex min-h-screen flex-col">
           {/* Render SidebarWrapper to handle client-side logic */}
-          <SidebarWrapper>
-            <Header />
-            <main
-              className={cn(
-                "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
-              )}
-            >
-              {children}
-            </main>
-          </SidebarWrapper>
+          <Header />
+          <main
+            className={cn(
+              "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
+            )}
+          >
+            {children}
+          </main>
           <footer>
             {/* Add your footer content here */}
           </footer>
