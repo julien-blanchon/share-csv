@@ -2,7 +2,6 @@
 
 import {
   Avatar as AvatarHolder,
-  AvatarFallback,
 } from "@/components/ui/avatar"
 import {
   CreditCard,

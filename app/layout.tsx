@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Badge } from "@/components/ui/badge";
+import Footer from "@/components/custom/footer/footer";
 import Header from "@/components/custom/header/header";
 import { cn } from "@/lib/utils";
 
@@ -36,9 +35,7 @@ export default function RootLayout({
           >
             {children}
           </main>
-          <footer>
-            {/* Add your footer content here */}
-          </footer>
+          <Footer />
         </div>
       </body>
     </html>

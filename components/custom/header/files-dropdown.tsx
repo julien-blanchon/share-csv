@@ -35,7 +35,7 @@ export function FilesDropdown() {
     const [groupedMenuItems, setGroupedMenuItems] = useState<GroupedMenuItems>({});
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
-    const [filename, setFilename] = useState('mock_data.csv'); // Add this to your component's state or props if it's not already available
+    const [filename, setFilename] = useState('mock_data.csv'); // TODO: Get file name from url
 
     useEffect(() => {
         fetchUserFiles();
