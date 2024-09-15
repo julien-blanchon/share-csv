@@ -92,7 +92,7 @@ export function FilesDropdown() {
     };
 
     return (
-        <DropdownMenu onOpenChange={setIsOpen}>
+        <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
@@ -131,8 +131,9 @@ export function FilesDropdown() {
                 </ScrollArea>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="text-card-foreground/80">
-                    <Link href="/" className="flex items-center justify-center w-full"
-                        onClick={() => setIsOpen(!isOpen)}
+                    <Link className="flex items-center justify-center w-full"
+                        href="/"
+                        onClick={() => setIsOpen(false)}
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         <span className="text-sm">Upload a new file</span>
