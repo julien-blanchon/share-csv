@@ -3,6 +3,10 @@ import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { cn } from "@/lib/utils";
 import { FileSpreadsheet } from 'lucide-react' // Add this import
+import { uploadFileToBucket } from '@/utils/supabase/supabase-file-upload'
+import { createClient } from '@/utils/supabase/client'
+import { useToast } from "@/components/ui/use-toast" // Add this import
+import { useRouter } from 'next/navigation' // Change this import
 
 // Typescript:
 import {
@@ -80,6 +84,10 @@ const Dropzone = ({
     showErrorMessage = true,
     ...props
 }: DropzoneProps) => {
+    const supabase = createClient()
+    const { toast } = useToast()
+    const router = useRouter() // Add this line
+
     // Constants:
     const dropzone = useDropzone({
         ...props,
@@ -89,14 +97,56 @@ const Dropzone = ({
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
             'application/vnd.ms-excel': ['.xls'],
         },
-        onDrop(acceptedFiles, fileRejections, event) {
-            if (props.onDrop) props.onDrop(acceptedFiles, fileRejections, event)
-            else {
+        onDrop: async (acceptedFiles, fileRejections, event) => {
+            if (props.onDrop) {
+                props.onDrop(acceptedFiles, fileRejections, event)
+            } else {
+                const { data, error } = await supabase.auth.getUser()
+
+                if (!data.user) {
+                    console.error('No user')
+                    toast({
+                        title: "Error",
+                        description: "Please log in to upload files.",
+                        variant: "destructive",
+                    })
+                    return
+                }
+
+                const user_id = data.user.id
+
+                for (const file of acceptedFiles) {
+                    try {
+                        const { data, error, uuid } = await uploadFileToBucket(file, user_id)
+                        if (error) throw error
+
+                        toast({
+                            title: "Success",
+                            description: `${file.name} uploaded successfully.`,
+                        })
+
+                        // Use router.push for client-side navigation
+                        router.push(`/f/${uuid}`)
+                    } catch (error) {
+                        console.error('Error uploading file:', error)
+                        toast({
+                            title: "Error",
+                            description: `Failed to upload ${file.name}`,
+                            variant: "destructive",
+                        })
+                    }
+                }
+
                 setFilesUploaded(_filesUploaded => [..._filesUploaded, ...acceptedFiles])
                 if (fileRejections.length > 0) {
                     let _errorMessage = `Could not upload ${fileRejections[0].file.name}`
                     if (fileRejections.length > 1) _errorMessage = _errorMessage + `, and ${fileRejections.length - 1} other files.`
                     setErrorMessage(_errorMessage)
+                    toast({
+                        title: "Error",
+                        description: _errorMessage,
+                        variant: "destructive",
+                    })
                 } else {
                     setErrorMessage('')
                 }
