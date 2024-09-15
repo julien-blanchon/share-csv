@@ -86,7 +86,7 @@ const Dropzone = ({
 }: DropzoneProps) => {
     const supabase = createClient()
     const { toast } = useToast()
-    const router = useRouter() // Add this line
+    const router = useRouter()
 
     // Constants:
     const dropzone = useDropzone({
