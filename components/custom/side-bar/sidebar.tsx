@@ -10,27 +10,31 @@ import { SidebarToggle } from "@/components/custom/side-bar/sidebar-toggle";
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void }) {
     return (
-        <aside
-            className={cn(
-                "fixed top-0 left-0 z-20 h-screen lg:translate-x-0 transition-all ease-in-out duration-300",
-                isOpen ? "w-72 opacity-100 visible" : "w-0 opacity-0 invisible"
-            )}
-        >
-            <div className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800">
-                <div className="flex justify-between items-center mb-4">
-                    <SidebarToggle isOpen={isOpen} setIsOpen={setIsOpen} />
-                    <Button variant="ghost" size="icon">
-                        <Upload className="w-5 h-5" />
+        <>
+            <aside
+                className={cn(
+                    "fixed top-0 left-0 z-20 h-screen lg:translate-x-0 transition-all ease-in-out duration-300",
+                    isOpen ? "w-72 opacity-100 visible" : "w-0 opacity-0 invisible"
+                )}
+            >
+                <div className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800">
+                    <div className="flex justify-between items-center mb-4">
+                        <Button variant="ghost" size="icon">
+                            <Upload className="w-5 h-5" />
+                        </Button>
+                    </div>
+                    <Button
+                        className="mb-4"
+                        variant="link"
+                        asChild
+                    >
                     </Button>
+                    <Menu isOpen={isOpen} />
                 </div>
-                <Button
-                    className="mb-4"
-                    variant="link"
-                    asChild
-                >
-                </Button>
-                <Menu isOpen={isOpen} />
+            </aside>
+            <div className="fixed top-4 left-3 z-30">
+                <SidebarToggle isOpen={isOpen} setIsOpen={setIsOpen} />
             </div>
-        </aside>
+        </>
     );
 }
