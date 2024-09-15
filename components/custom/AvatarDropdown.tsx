@@ -9,6 +9,7 @@ import {
   CreditCard,
   LifeBuoy,
   Settings,
+  LogOut,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -89,10 +90,11 @@ export function AvatarDropdown({ user }: { user: UserSupabase }) {
         <DropdownMenuItem asChild className="flex items-center">
           <button
             onClick={signOut}
-            className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+            className="flex items-center w-full px-2 py-1.5 text-sm font-semibold text-red-500" 
             disabled={loading} // Disable button while signing out
           >
-            {loading ? 'Logging out...' : 'Logout'}
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>{loading ? 'Logging out...' : 'Logout'}</span>
           </button>
         </DropdownMenuItem>
       </DropdownMenuContent>

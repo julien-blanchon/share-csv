@@ -111,6 +111,7 @@ const filterTypeMap: Record<ColumnType, string> = {
   date: "timerange",
   url: "input",
   tags: "checkbox",
+  images: "input",
 };
 
 // export const filterFields = Object.keys(columnType).map((key) => {
@@ -214,6 +215,7 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
           value: bool,
         })),
       };
+    case "images":
     case "tags":
     case "string":
       return {

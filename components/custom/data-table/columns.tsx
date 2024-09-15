@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import { generateColorFromName } from "./constants";
 import { DataTableColumnHeader } from "./data-table-column-header";
 
-
 // type CellConfig = ColumnDef<string>["cell"]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cellRenderers: Record<ColumnType, (value: any) => JSX.Element> = {
@@ -42,21 +41,38 @@ const cellRenderers: Record<ColumnType, (value: any) => JSX.Element> = {
             backgroundColor: generateColorFromName(value, 0.1),
             borderColor: generateColorFromName(value, 0.2),
           }} className="border-inherit text-xs"
-          >{value}</Badge>}
+        >{value}</Badge>}
     </div>
   ),
+  // Render image from url (value) with a max width of 200px
+  // eslint-disable-next-line @next/next/no-img-element
+  images: (value) => <img src={value} alt="Image" className="max-w-[200px]" />,
+
 };
 
 type HeaderConfig = ColumnDef<string>["header"]
 const headerRenderers: Record<ColumnType, (key: string) => HeaderConfig> = {
-  string: (key) => key.charAt(0).toUpperCase() + key.slice(1),
-  number: (key) => key.charAt(0).toUpperCase() + key.slice(1),
-  boolean: (key) => key.charAt(0).toUpperCase() + key.slice(1),
-  date: () => ({ column }) => (
-    <DataTableColumnHeader column={column} title="Date" />
+  string: (key) => ({ column }) => (
+    <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
   ),
-  url: (key) => key.charAt(0).toUpperCase() + key.slice(1),
-  tags: (key) => key.charAt(0).toUpperCase() + key.slice(1),
+  number: (key) => ({ column }) => (
+    <DataTableColumnHeader type="number" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
+  boolean: (key) => ({ column }) => (
+    <DataTableColumnHeader type="boolean" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
+  date: (key) => ({ column }) => (
+    <DataTableColumnHeader type="date" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
+  url: (key) => ({ column }) => (
+    <DataTableColumnHeader type="url" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
+  tags: (key) => ({ column }) => (
+    <DataTableColumnHeader type="tags" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
+  images: (key) => ({ column }) => (
+    <DataTableColumnHeader type="images" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+  ),
 };
 
 type filterFn = ColumnDef<string>["filterFn"]
@@ -67,6 +83,7 @@ const filterFns: Record<ColumnType, filterFn> = {
   date: "filterDate" as filterFn,
   url: "auto",
   tags: "auto",
+  images: "auto",
 };
 
 // Iterate and dynamically generate columns
@@ -81,6 +98,9 @@ export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<
       filterFn: filterFns[type],
       cell: ({ row }) => {
         const value = row.getValue(key);
+        console.log('value', value);
+        console.log('type', type);
+        console.log('cellRenderers[type]', cellRenderers[type]);
         return cellRenderers[type](value);
       },
       // filterFn: (row, id, value) => filterFns[type](row, id, value),
@@ -228,7 +248,7 @@ export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<
 //   {
 //     accessorKey: "date",
 //     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Date" />
+//       <DataTableColumnHeader column={column} title={(key) => key.charA) + key.slice(1)} />
 //     ),
 //     cell: ({ row }) => {
 //       const value = row.getValue("date");
