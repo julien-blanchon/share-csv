@@ -33,7 +33,7 @@ export default function RootLayout({
             <Header />
             <main
               className={cn(
-                "container mx-auto flex min-h-screen flex-col gap-4 px-2 py-4 md:px-4 md:py-8"
+                "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
               )}
             >
               {children}

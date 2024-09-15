@@ -1,5 +1,3 @@
-import Link from "next/link"
-import { NavigationMenu, NavigationMenuList, NavigationMenuLink } from "@/components/ui/navigation-menu"
 import { LoginDialog } from "./login"
 import { RegisterDialog } from "./register"
 import { createClient } from '@/utils/supabase/server'
