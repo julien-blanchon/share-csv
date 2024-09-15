@@ -4,6 +4,7 @@ import { RegisterDialog } from "./register"
 import { createClient } from '@/utils/supabase/server'
 import { AvatarDropdown } from "./AvatarDropdown"
 import { FilesDropdown } from "./files-dropdown"
+import { ShareDialog } from "./share"
 
 export default async function Component() {
   const supabase = createClient()
@@ -14,7 +15,9 @@ export default async function Component() {
       {/* TODO: Fix display, height has no impact right now and it overlays with toggle*/}
       <Image src="/logo.svg" alt="Logo" width="50" height="50" />
       <FilesDropdown />
-      <div className="ml-auto flex gap-2">
+
+      <div className="ml-auto flex gap-4">
+        <ShareDialog />
         {data?.user ? (
           <AvatarDropdown user={data.user} />
         ) : (
