@@ -3,7 +3,7 @@ import { LoginDialog } from "./login"
 import { RegisterDialog } from "./register"
 import { createClient } from '@/utils/supabase/server'
 import { AvatarDropdown } from "./AvatarDropdown"
-import { FilesDropdown } from "./files-menu/files-dropdown"
+import { FilesDropdown } from "./files-dropdown"
 
 export default async function Component() {
   const supabase = createClient()

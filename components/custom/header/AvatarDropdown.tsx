@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { type User as UserSupabase } from "@/types/user"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import Link from "next/link"
 import { createClient } from '@/utils/supabase/client'; // Use the client-side Supabase client
 import { useRouter } from 'next/navigation'; // For client-side redirection
