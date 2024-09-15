@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PanelsTopLeft, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,10 +18,12 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (is
                 )}
             >
                 <div className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800">
-                    <div className="flex justify-between items-center mb-4">
-                        <Button variant="ghost" size="icon">
-                            <Upload className="w-5 h-5" />
-                        </Button>
+                    <div className="flex justify-end items-center mb-4">
+                        <Link href="/">
+                            <Button variant="ghost" size="icon" title="Upload">
+                                <Upload className="w-5 h-5" />
+                            </Button>
+                        </Link>
                     </div>
                     <Button
                         className="mb-4"
