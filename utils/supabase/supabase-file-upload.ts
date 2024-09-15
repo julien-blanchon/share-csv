@@ -10,7 +10,8 @@ export async function uploadFileToBucket(file: File, userId: string) {
     const fileName = `${uuid}.${fileExtension}`;
     const filePath = `${userId}/${fileName}`;
 
-    const { data, error } = await supabase
+    // Upload file to storage
+    const { data: storageData, error: storageError } = await supabase
         .storage
         .from('files')
         .upload(filePath, file, {
@@ -18,10 +19,42 @@ export async function uploadFileToBucket(file: File, userId: string) {
             upsert: false
         });
 
-    if (error) {
-        console.error('Error uploading file:', error);
-        return { error };
+    if (storageError) {
+        console.error('Error uploading file:', storageError);
+        return { error: storageError };
     }
 
-    return { data, filePath, uuid };
+    // Insert file information into the files table
+    const { data: fileData, error: fileError } = await supabase
+        .from('files')
+        .insert({
+            id: uuid,
+            filename: file.name,
+            schema: null, // TODO: Add schema default schema
+            bucket: 'files',
+            blob_path: filePath,
+        })
+        .select()
+        .single();
+
+    if (fileError) {
+        console.error('Error inserting file data:', fileError);
+        return { error: fileError };
+    }
+
+    // Insert user-file relationship into the user_files table
+    const { error: userFileError } = await supabase
+        .from('user_files')
+        .insert({
+            user_id: userId,
+            file_id: uuid,
+            owner: true,
+        });
+
+    if (userFileError) {
+        console.error('Error inserting user-file relationship:', userFileError);
+        return { error: userFileError };
+    }
+
+    return { data: fileData, filePath, uuid };
 }
