@@ -37,15 +37,41 @@ export function FilesDropdown() {
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
-    const [filename, setFilename] = useState('mock_data.csv'); // TODO: Get file name from url
+    const [filename, setFilename] = useState(''); // TODO: Get file name from url
 
     useEffect(() => {
         fetchUserFiles();
     }, []);
 
     useEffect(() => {
-        setFilename(pathname.split("/").pop() || 'mock_data.csv');
+        const getFilename = async () => {
+            const filename = await fetchFilename();
+            setFilename(filename);
+        };
+        getFilename();
     }, [pathname]);
+
+    const fetchFilename = async () => {
+        const uuid = pathname.split("/").pop();
+        if (uuid) {
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from('files')
+                .select('filename')
+                .eq('id', uuid)
+                .single();
+
+            if (error) {
+                console.error('Error fetching filename:', error);
+                return '';
+            }
+
+            if (data) {
+                return data.filename;
+            }
+        }
+        return '';
+    };
 
     const fetchUserFiles = async () => {
         const supabase = createClient();
