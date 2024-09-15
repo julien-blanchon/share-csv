@@ -7,11 +7,12 @@ import { uploadFileToBucket } from '@/utils/supabase/supabase-file-upload'
 import { createClient } from '@/utils/supabase/client'
 import { useToast } from "@/components/ui/use-toast" // Add this import
 import { useRouter } from 'next/navigation' // Change this import
-
 // Typescript:
 import {
     type DropzoneProps as _DropzoneProps,
-    type DropzoneState as _DropzoneState
+    type DropzoneState as _DropzoneState,
+    type FileRejection,
+    type DropEvent
 } from 'react-dropzone'
 
 export interface DropzoneState extends _DropzoneState { }
@@ -97,7 +98,7 @@ const Dropzone = ({
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
             'application/vnd.ms-excel': ['.xls'],
         },
-        onDrop: async (acceptedFiles, fileRejections, event) => {
+        onDrop: async (acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
             if (props.onDrop) {
                 props.onDrop(acceptedFiles, fileRejections, event)
             } else {

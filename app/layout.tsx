@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Badge } from "@/components/ui/badge";
 import Header from "@/components/custom/header";
 import { SidebarWrapper } from "@/components/custom/side-bar/SidebarWrapper"; // Import new Sidebar wrapper
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster"
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,6 +39,7 @@ export default function RootLayout({
               {children}
             </main>
           </SidebarWrapper>
+          <Toaster />
           <footer>
             {/* Add your footer content here */}
           </footer>

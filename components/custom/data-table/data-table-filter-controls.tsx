@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef, Table } from "@tanstack/react-table";
+import type { Table } from "@tanstack/react-table";
 
 import {
   Accordion,
@@ -22,17 +22,15 @@ import { X } from "lucide-react";
 
 // TODO: only pass the columns to generate the filters!
 // https://tanstack.com/table/v8/docs/framework/react/examples/filters
-interface DataTableFilterControlsProps<TData, TValue> {
+interface DataTableFilterControlsProps<TData> {
   table: Table<TData>;
-  columns: ColumnDef<TData, TValue>[];
   filterFields?: DataTableFilterField<TData>[];
 }
 
-export function DataTableFilterControls<TData, TValue>({
+export function DataTableFilterControls<TData>({
   table,
-  columns,
   filterFields,
-}: DataTableFilterControlsProps<TData, TValue>) {
+}: DataTableFilterControlsProps<TData>) {
   const filters = table.getState().columnFilters;
   const updateSearchParams = useUpdateSearchParams();
   const router = useRouter();

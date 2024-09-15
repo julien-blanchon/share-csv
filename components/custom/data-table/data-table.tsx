@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex w-full flex-col gap-3 sm:flex-row">
+    <div className="flex w-full flex-col gap-3 sm:flex-row h-full">
       <div
         className={cn(
           "w-full p-1 sm:sticky sm:top-0 sm:h-screen sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64 lg:min-w-72 lg:max-w-72",
@@ -147,7 +147,6 @@ export function DataTable<TData, TValue>({
         <div className="-m-1 h-full p-1 sm:overflow-x-hidden sm:overflow-y-scroll">
           <DataTableFilterControls
             table={table}
-            columns={columns}
             filterFields={filterFields}
           />
         </div>

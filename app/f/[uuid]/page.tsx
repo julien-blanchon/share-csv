@@ -1,154 +1,157 @@
 "use client";
 
-// import { columns } from "@/components/custom/data-table/columns";
-import {
-  // data,
-  makeFilterFields,
-} from "@/components/custom/data-table/constants";
-import { DataTable } from "@/components/custom/data-table/data-table";
-import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
-import { ColumnDefinitionType, ColumnType, createFilterSchema } from "@/components/custom/data-table/schema";
+import { usePathname } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 import { parseCSV } from "@/components/custom/data-table/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { DataTableFilterField } from "@/components/custom/data-table/types";
-import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/custom/data-table/data-table";
+import { ColumnDefinitionType, ColumnType, createFilterSchema } from "@/components/custom/data-table/schema";
+import { makeFilterFields } from "@/components/custom/data-table/constants";
 import { makeColumns } from "@/components/custom/data-table/columns";
+import { ColumnDef } from "@tanstack/react-table";
+import { Label } from "@/components/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 export default function Page({
-  searchParams,
+    searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const [inputData, setInputData] = useState<string>(""); // For the textarea input
-  const [data, setData] = useState<Record<string, unknown>[]>([]); // Parsed data
-  const [columnDefinition, setColumnDefinition] = useState<ColumnDefinitionType>({}); // Column types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [columns, setColumns] = useState<ColumnDef<string, any>[]>([]);
-  const [filterFields, setFilterFields] = useState<DataTableFilterField<string>[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [csvData, setCsvData] = useState<Record<string, any>[]>([]);
+    const [columns, setColumns] = useState<ColumnDef<string>[]>([]);
+    const [filterFields, setFilterFields] = useState([]);
+    const [columnDefinition, setColumnDefinition] = useState<ColumnDefinitionType>({}); // Column types
+    const [columnFilterSchema, setColumnFilterSchema] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const pathname = usePathname();
+    const uuid = pathname.split("/").pop(); // Get the UUID from the pathname
+    const supabase = createClient();
 
-  const columnFilterSchema = createFilterSchema(columnDefinition);
+    // Handle column type change
+    const handleColumnTypeChange = (column: string, type: ColumnType) => {
+        setColumnDefinition((prev) => ({
+            ...prev,
+            [column]: type,
+        }));
+    };
 
-  // const search = columnFilterSchema.safeParse(searchParams);
-  // const search = searchParams;
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Get user info
+                const { data: userData, error: userError } = await supabase.auth.getUser();
+                if (userError) throw userError;
 
+                const userId = userData?.user?.id;
+                const fileExtension = "csv";
+                const fileName = `${uuid}.${fileExtension}`;
+                const filePath = `${userId}/${fileName}`;
 
+                // Download the CSV file from Supabase storage
+                const { data: fileData, error: fileError } = await supabase.storage.from("files").download(filePath);
+                if (fileError) throw fileError;
 
-  useEffect(() => {
-    fetch(`/api/views?slug=${"data-table"}`, { method: "POST" });
-  }, []);
+                // Convert file to text and parse it
+                const csvText = await fileData.text();
+                console.log("csvText", csvText);
+                const parsedData = parseCSV(csvText);
+                console.log("parsedData", parsedData);
 
-  // useEffect(() => {
-  //   setFilterFields(makeFilterFields(columnDefinition));
-  // }, [columnDefinition]);
+                // Set the parsed CSV data in state
+                setCsvData(parsedData);
 
-  // if (!search.success) {
-  //   console.log(search.error);
-  //   return null;
-  // }
+                const { data: fileSchemaData, error: fileSchemaError } = await supabase
+                    .from("files")
+                    .select("schema")
+                    .eq("id", uuid).single();
 
-  // Handle textarea input
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputData(e.target.value);
-  };
+                if (fileSchemaError) throw fileSchemaError;
 
-  // Parse input data when button is clicked
-  const handleParseData = () => {
-    try {
-      const parsedData = parseCSV(inputData); // This function should parse CSV or JSON
-      setData(parsedData);
+                const defaultColumnTypes = Object.fromEntries(
+                    Object.keys(parsedData[0]).map((key) => [key, "string"])
+                ) as ColumnDefinitionType;
 
-      console.log('parsedData', parsedData);
+                const newColumnTypes = (fileSchemaData.schema || defaultColumnTypes) as ColumnDefinitionType;
 
-      // Get unique column names
-      const keys = Object.keys(parsedData[0] || {});
+                console.log("newColumnTypes", newColumnTypes);
 
-      // If new columns found, add them to columnDefinition with a default "string" type
-      const newColumnTypes = { ...columnDefinition };
-      keys.forEach((key) => {
-        if (!newColumnTypes[key]) {
-          newColumnTypes[key] = "string"; // Default type is string, can be changed
-        }
-      });
-      setColumnDefinition(newColumnTypes);
+                setColumnDefinition(newColumnTypes);
+                setColumns(makeColumns(newColumnTypes));
+            } catch (err) {
+                setError("Failed to fetch CSV data.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-      setColumns(makeColumns(newColumnTypes));
-    } catch (error) {
-      console.error("Error parsing data", error);
-    }
-  };
+        fetchData();
+    }, [supabase, uuid]);
 
-  // Handle column type change
-  const handleColumnTypeChange = (column: string, type: ColumnType) => {
-    setColumnDefinition((prev) => ({
-      ...prev,
-      [column]: type,
-    }));
-  };
+    useEffect(() => {
+        setFilterFields(makeFilterFields(columnDefinition, csvData));
+    }, [columnDefinition, csvData]);
 
-  const handleFilterFields = () => {
-    setFilterFields(makeFilterFields(columnDefinition, data));
-  }
+    useEffect(() => {
+        setColumnFilterSchema(createFilterSchema(columnDefinition));
+    }, [columnDefinition]);
 
-  return (
-    <>
-      <div className="p-4 flex flex-col gap-4">
-        <div className="mb-4">
-          <Textarea
-            placeholder="Paste your CSV or JSON here"
-            value={inputData}
-            onChange={handleInputChange}
-          />
+    useEffect(() => {
+        setColumns(makeColumns(columnDefinition));
+    }, [columnDefinition]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+
+    return (
+        <div className="container mx-auto h-full">
+            {
+                columns.length > 0 && (
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        {columns.map((column) => (
+                            column.id !== undefined && (
+                                <div key={column.id}>
+                                    <Label>{column.id}</Label>
+                                    <Select onValueChange={(value) => handleColumnTypeChange(column.id as string, value as ColumnType)}>
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder={column.id} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="string">String</SelectItem>
+                                            <SelectItem value="number">Number</SelectItem>
+                                            <SelectItem value="boolean">Boolean</SelectItem>
+                                            <SelectItem value="date">Date</SelectItem>
+                                            <SelectItem value="url">URL</SelectItem>
+                                            <SelectItem value="tags">Tags</SelectItem>
+                                            <SelectItem value="images">Images</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )
+                        ))}
+                    </div>
+                )
+            }
+            <div>
+                <DataTable
+                    columns={columns}
+                    data={csvData}
+                    filterFields={filterFields}
+                    columnFilterSchema={columnFilterSchema}
+                // defaultColumnFilters={Object.entries(search.data).map(([key, value]) => ({
+                //   id: key,
+                //   value,
+                // }))}
+                />
+            </div>
         </div>
-        <Button onClick={handleParseData}>Parse Data</Button>
-
-        {/* Show column types selector once the data is parsed */}
-        {columns.length > 0 && (
-          <div>
-            {columns.map((column) => (
-              <div key={column.id}>
-                <Label>{column.id}</Label>
-                <Select onValueChange={(value) => handleColumnTypeChange(column.id, value as ColumnType)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder={column.id} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="string">String</SelectItem>
-                    <SelectItem value="number">Number</SelectItem>
-                    <SelectItem value="boolean">Boolean</SelectItem>
-                    <SelectItem value="date">Date</SelectItem>
-                    <SelectItem value="url">URL</SelectItem>
-                    <SelectItem value="tags">Tags</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div>
-          <Button onClick={handleFilterFields}>Generate Filter Fields</Button>
-        </div>
-      </div>
-      {/* Data table displaying after parsing */}
-      <DataTable
-        columns={columns}
-        data={data}
-        filterFields={filterFields}
-        columnFilterSchema={columnFilterSchema}
-      // defaultColumnFilters={Object.entries(search.data).map(([key, value]) => ({
-      //   id: key,
-      //   value,
-      // }))}
-      />
-    </>
-  );
+    );
 }

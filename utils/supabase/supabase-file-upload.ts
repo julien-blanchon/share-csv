@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createClient } from '@/utils/supabase/client'
+import { parseCSV } from '@/components/custom/data-table/utils';
+import { getColumnTypes } from '../table/infer-table-schema';
 
 // Initialize Supabase client
 const supabase = createClient();
@@ -24,13 +26,19 @@ export async function uploadFileToBucket(file: File, userId: string) {
         return { error: storageError };
     }
 
+    const csvData = await file.text();
+    const parsedData = parseCSV(csvData);
+
+    // If new columns found, add them to columnDefinition with a default "string" type
+    const schema = getColumnTypes(parsedData);
+
     // Insert file information into the files table
     const { data: fileData, error: fileError } = await supabase
         .from('files')
         .insert({
             id: uuid,
             filename: file.name,
-            schema: null, // TODO: Add schema default schema
+            schema: schema, 
             bucket: 'files',
             blob_path: filePath,
         })
