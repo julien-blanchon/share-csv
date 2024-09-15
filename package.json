@@ -46,8 +46,9 @@
     "react": "^18",
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
-    "supabase": "^1.192.5",
+    "react-dropzone": "^14.2.3",
     "shadcn": "^2.0.6",
+    "supabase": "^1.192.5",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
