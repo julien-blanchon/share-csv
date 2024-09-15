@@ -1,20 +1,18 @@
-import localFont from "next/font/local";
 import "@/app/globals.css";
 import Header from "@/components/custom/header/header";
 import Footer from "@/components/custom/footer/footer";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster"
+import { BGGrid } from "@/components/custom/background/bg-grid";
 
+import { Inter } from "next/font/google";
+import LocalFont from "next/font/local";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const inter = Inter({ subsets: ["latin"] });
+
+const calSans = LocalFont({
+  src: "../public/fonts/CalSans-SemiBold.ttf",
+  variable: "--font-calsans",
 });
 
 export default function RootLayout({
@@ -25,20 +23,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.className} ${calSans.variable}`}
       >
         <div className="flex min-h-screen flex-col">
           {/* Render SidebarWrapper to handle client-side logic */}
           <Header />
-          <main
-            className={cn(
-              "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
-            )}
-          >
-            <Toaster />
-            {children}
-          </main>
-          <Footer />
+          <BGGrid>
+            <main
+              className={cn(
+                "container border border-border/50 bg-background/50 p-4 backdrop-blur-[2px] rounded-xl mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
+              )}
+            >
+              <Toaster />
+              {children}
+            </main>
+            <Footer />
+          </BGGrid>
         </div>
       </body>
     </html>
