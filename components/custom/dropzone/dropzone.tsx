@@ -7,6 +7,8 @@ import { uploadFileToBucket } from '@/utils/supabase/supabase-file-upload'
 import { createClient } from '@/utils/supabase/client'
 import { useToast } from "@/components/ui/use-toast" // Add this import
 import { useRouter } from 'next/navigation' // Change this import
+import { Button } from "@/components/ui/button";
+
 // Typescript:
 import {
     type DropzoneProps as _DropzoneProps,
@@ -177,24 +179,32 @@ const Dropzone = ({
                 className={cn('flex flex-col justify-center items-center w-full  border-dashed border-2 border-gray-200 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all select-none cursor-pointer', dropZoneClassName)}
             >
                 <input {...dropzone.getInputProps()} />
-                {
-                    children ? (
-                        children(dropzone)
-                    ) : dropzone.isDragAccept ? (
-                        <div className='text-2xl font-medium'>Drop your files here!</div>
-                    ) : (
-                        <div className='flex items-center flex-col gap-3 p-12'>
-                            <FileSpreadsheet className='w-12 h-12 text-gray-400' />
-                            <div className='flex items-center flex-col gap-1'>
-                                <div className='text-2xl font-medium'>Upload a new file</div>
-                                <div className='text-lg text-gray-500'>Drag and drop your csv or excel file anywhere in this box</div>
-                            </div>
-                            <button className='mt-2 px-4 py-2 bg-[#18BFFF] text-white rounded-md hover:bg-[#0EAFF0]  transition-colors'>
-                                Upload
-                            </button>
-                        </div>
-                    )
-                }
+                <div className='flex flex-col items-center gap-4'>
+                    <div className='flex items-center justify-center flex-col gap-3 p-12 h-64 w-full'>
+                        <FileSpreadsheet className='w-12 h-12 text-gray-400' />
+
+                        {
+                            children ? (
+                                <div className="flex items-center justify-center h-full w-full">
+                                    {children(dropzone)}
+                                </div>
+                            ) : dropzone.isDragAccept ? (
+                                <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
+                                    <div className='text-2xl font-medium'>Drop your file here</div>
+                                    <div className='text-lg text-gray-500'>let it go</div>
+                                </div>
+                            ) : (
+                                <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
+                                    <div className='text-2xl font-medium'>Upload a new file</div>
+                                    <div className='text-lg text-gray-500'>Drag and drop your csv or excel file anywhere in this box</div>
+                                    <Button className="mt-4">
+                                        Upload
+                                    </Button>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
             </div>
             {errorMessage && <span className='text-xs text-red-600 mt-3'>{errorMessage}</span>}
             {

@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/custom/header";
-import { SidebarWrapper } from "@/components/custom/side-bar/SidebarWrapper"; // Import new Sidebar wrapper
+import Footer from "@/components/custom/footer/footer";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster"
 
@@ -29,20 +29,16 @@ export default function RootLayout({
       >
         <div className="flex min-h-screen flex-col">
           {/* Render SidebarWrapper to handle client-side logic */}
-          <SidebarWrapper>
-            <Header />
-            <main
-              className={cn(
-                "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
-              )}
-            >
-              {children}
-            </main>
-          </SidebarWrapper>
-          <Toaster />
-          <footer>
-            {/* Add your footer content here */}
-          </footer>
+          <Header />
+          <main
+            className={cn(
+              "container mx-auto flex min-h-screen flex-col gap-4 px-2 md:px-4"
+            )}
+          >
+            <Toaster />
+            {children}
+          </main>
+          <Footer />
         </div>
       </body>
     </html>

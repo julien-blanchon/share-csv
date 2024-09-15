@@ -1,9 +1,7 @@
 'use client'; // Ensure this runs on the client side
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
+  Avatar as AvatarHolder,
 } from "@/components/ui/avatar"
 import {
   CreditCard,
@@ -21,11 +19,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { type User as UserSupabase } from "@/types/user"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import Link from "next/link"
 import { createClient } from '@/utils/supabase/client'; // Use the client-side Supabase client
 import { useRouter } from 'next/navigation'; // For client-side redirection
 import { useState } from "react";
+import Avatar from "boring-avatars";
 
 export function AvatarDropdown({ user }: { user: UserSupabase }) {
   const [loading, setLoading] = useState(false); // To manage loading state
@@ -48,13 +47,15 @@ export function AvatarDropdown({ user }: { user: UserSupabase }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" disabled={loading}>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>
+        <Button variant="ghost" size="icon" disabled={loading} className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+
+        >
+          <AvatarHolder>
+            <Avatar name={user.id} />
+            {/* <AvatarFallback>
               {user.email.slice(0, 1).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+            </AvatarFallback> */}
+          </AvatarHolder>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" sideOffset={5} align="end">
@@ -90,7 +91,7 @@ export function AvatarDropdown({ user }: { user: UserSupabase }) {
         <DropdownMenuItem asChild className="flex items-center">
           <button
             onClick={signOut}
-            className="flex items-center w-full px-2 py-1.5 text-sm font-semibold text-red-500" 
+            className="flex items-center w-full px-2 py-1.5 text-sm font-semibold text-red-500"
             disabled={loading} // Disable button while signing out
           >
             <LogOut className="mr-2 h-4 w-4" />
