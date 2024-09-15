@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils"; // Make sure to import the cn utility
 import { Plus } from "lucide-react"; // Add this import at the top of the file
+import { usePathname } from 'next/navigation'
 
 interface MenuItem {
     name: string;
@@ -35,11 +36,16 @@ export function FilesDropdown() {
     const [groupedMenuItems, setGroupedMenuItems] = useState<GroupedMenuItems>({});
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
     const [filename, setFilename] = useState('mock_data.csv'); // TODO: Get file name from url
 
     useEffect(() => {
         fetchUserFiles();
     }, []);
+
+    useEffect(() => {
+        setFilename(pathname.split("/").pop() || 'mock_data.csv');
+    }, [pathname]);
 
     const fetchUserFiles = async () => {
         const supabase = createClient();
@@ -52,13 +58,7 @@ export function FilesDropdown() {
 
         const { data: files, error: filesError } = await supabase
             .from('user_files')
-            .select(`
-                files (
-                    id,
-                    filename,
-                    created_at
-                )
-            `)
+            .select('*, files:files(*)')
             .eq('user_id', userData.user.id)
             .eq('owner', true);
 
