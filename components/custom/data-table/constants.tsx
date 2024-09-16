@@ -3,7 +3,10 @@
 import { ColumnDefinitionType, ColumnType } from "./schema";
 import type { DataTableFilterField, Option } from "./types";
 
-export const generateColorFromName = (name: string, opacity = 1) => {
+export const generateColorFromName = (name: string | number, opacity = 1) => {
+  if (typeof name === 'number') {
+    name = name.toString();
+  }
   const hash = name
     .split("")
     .reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
@@ -116,7 +119,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 
 // export const filterFields = Object.keys(columnType).map((key) => {
 //   const type = columnType[key];
-  
+
 //   const baseField = {
 //     label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the label
 //     value: key,
@@ -189,7 +192,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: Record<string, unknown>[]
 ) => Object.keys(columnDefinition).map((key) => {
   const type = columnDefinition[key];
-  
+
   const baseField = {
     label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the label
     value: key,
@@ -230,7 +233,7 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
             });
           } else {
             if (!acc.some((option) => option.value === values)) {
-              acc.push({ label: values as string, value: values as string});
+              acc.push({ label: values as string, value: values as string });
             }
           }
           return acc;
