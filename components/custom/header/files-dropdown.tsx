@@ -38,6 +38,8 @@ export function FilesDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const [filename, setFilename] = useState(''); // TODO: Get file name from url
+    const [user_id, setUserId] = useState('');
+
 
     useEffect(() => {
         fetchUserFiles();
@@ -82,6 +84,8 @@ export function FilesDropdown() {
             return;
         }
 
+        setUserId(userData.user.id);
+
         const { data: files, error: filesError } = await supabase
             .from('user_files')
             .select('*, files:files(*)')
@@ -114,7 +118,7 @@ export function FilesDropdown() {
     };
 
     const handleFileClick = (uuid: string) => {
-        router.push(`/f/${uuid}`);
+        router.push(`/f/${user_id}/${uuid}`);
     };
 
     return (
