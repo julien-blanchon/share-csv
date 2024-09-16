@@ -6,7 +6,7 @@ function detectColumnType(value: string | number | boolean | string[] | Date): C
       return "images";
     }
     if (typeof value === 'string' && value.match(/^https?:\/\/.+/)) {
-      return "url";
+      return "url_preview";
     }
     if (Array.isArray(value)) {
       return "tags";

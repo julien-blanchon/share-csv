@@ -3,112 +3,188 @@
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Check, Minus } from "lucide-react";
-import { ColumnDefinitionType, ColumnType } from "./schema";
-// import { DataTableColumnHeader } from "./data-table-column-header";
+import { ColumnDefinitionType } from "./schema";
 import { format } from "date-fns";
 import { generateColorFromName } from "./constants";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { LinkPreview } from "@/components/ui/link-preview";
 
-// type CellConfig = ColumnDef<string>["cell"]
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const cellRenderers: Record<ColumnType, (value: any) => JSX.Element> = {
-  string: (value) => <span>{value}</span>,
-  number: (value) => <span>{value || <Minus className="h-4 w-4 text-muted-foreground/50" />}</span>,
-  boolean: (value) => (value ? <Check className="h-4 w-4" /> : <Minus className="h-4 w-4 text-muted-foreground/50" />),
-  date: (value) => <span>{format(new Date(value), "LLL dd, y HH:mm")}</span>,
-  url: (value) => <div className="max-w-[200px] truncate">{value}</div>,
-  tags: (value) => (
-    <div className="flex flex-wrap gap-1">
-      {Array.isArray(value)
-        ? value.map((v) => (
-          <Badge
-            key={v}
-            variant="outline"
-            className="border-inherit text-xs"
-            style={{
-              color: generateColorFromName(v, 1),
-              backgroundColor: generateColorFromName(v, 0.1),
-              borderColor: generateColorFromName(v, 0.2),
-            }}
-          >
-            {v}
-          </Badge>
-        ))
-        : <Badge
-          variant="outline"
-          style={{
-            color: generateColorFromName(value, 1),
-            backgroundColor: generateColorFromName(value, 0.1),
-            borderColor: generateColorFromName(value, 0.2),
-          }} className="border-inherit text-xs"
-        >{value}</Badge>}
-    </div>
-  ),
-  // Render image from url (value) with a max width of 200px
-  // eslint-disable-next-line @next/next/no-img-element
-  images: (value) => <img src={value} alt="Image" className="max-w-[200px]" />,
-
-};
-
-type HeaderConfig = ColumnDef<string>["header"]
-const headerRenderers: Record<ColumnType, (key: string) => HeaderConfig> = {
-  string: (key) => ({ column }) => (
-    <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  number: (key) => ({ column }) => (
-    <DataTableColumnHeader type="number" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  boolean: (key) => ({ column }) => (
-    <DataTableColumnHeader type="boolean" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  date: (key) => ({ column }) => (
-    <DataTableColumnHeader type="date" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  url: (key) => ({ column }) => (
-    <DataTableColumnHeader type="url" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  tags: (key) => ({ column }) => (
-    <DataTableColumnHeader type="tags" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-  images: (key) => ({ column }) => (
-    <DataTableColumnHeader type="images" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
-  ),
-};
-
-type filterFn = ColumnDef<string>["filterFn"]
-const filterFns: Record<ColumnType, filterFn> = {
-  string: "auto",
-  number: "auto",
-  boolean: "auto",
-  date: "filterDate" as filterFn,
-  url: "auto",
-  tags: "auto",
-  images: "auto",
-};
-
-// Iterate and dynamically generate columns
 export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<string>[] = (columnDefinition) => {
-  console.log('columnDefinition', columnDefinition);
   const columns: ColumnDef<string>[] = Object.entries(columnDefinition).map(([key, type]) => {
-    console.log('type', type);
-    return {
-      id: key,
-      accessorKey: key,
-      header: headerRenderers[type](key),
-      filterFn: filterFns[type],
-      cell: ({ row }) => {
-        const value = row.getValue(key);
-        console.log('value', value);
-        console.log('type', type);
-        console.log('cellRenderers[type]', cellRenderers[type]);
-        return cellRenderers[type](value);
-      },
-      // filterFn: (row, id, value) => filterFns[type](row, id, value),
-    };
-  });
-  console.log('columns', columns);
+    switch (type) {
+      case "string":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string;
+            return <span>{value}</span>
+          },
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "number":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as number;
+            return <span>{value || <Minus className="h-4 w-4 text-muted-foreground/50" />}</span>
+          },
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "boolean":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as boolean;
+            return (value ? <Check className="h-4 w-4" /> : <Minus className="h-4 w-4 text-muted-foreground/50" />)
+          },
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "date":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string;
+            let date: string;
+            try {
+              date = format(new Date(value), "LLL dd, y HH:mm");
+            } catch (error) {
+              date = value;
+            }
+
+            return (<span className="text-muted-foreground">
+              {date}
+            </span>);
+          },
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "url":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          // cell: ({ row }) => {
+          //   const value = row.getValue(key) as string;
+          //   return <a href={value} target="_blank" rel="noopener noreferrer">
+          //     {value}
+          //   </a>
+          // },
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string;
+            return <a href={value} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:no-underline transition-all">
+              {value}
+            </a>
+          }
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "url_preview":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          // cell: ({ row }) => {
+          //   const value = row.getValue(key) as string;
+          //   return <a href={value} target="_blank" rel="noopener noreferrer">
+          //     {value}
+          //   </a>
+          // },
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string;
+            return <LinkPreview url={value} className="underline underline-offset-2 hover:no-underline transition-all"
+            >{value}</LinkPreview>
+          }
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+      case "tags":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string | string[];
+            return (
+              <div className="flex flex-wrap gap-1">
+                {Array.isArray(value)
+                  ? value.map((v) => (
+                    <Badge
+                      key={v}
+                      variant="outline"
+                      className="border-inherit text-xs"
+                      style={{
+                        color: generateColorFromName(v, 1),
+                        backgroundColor: generateColorFromName(v, 0.1),
+                        borderColor: generateColorFromName(v, 0.2),
+                      }}
+                    >
+                      {v}
+                    </Badge>
+                  ))
+                  : <Badge
+                    variant="outline"
+                    style={{
+                      color: generateColorFromName(value, 1),
+                      backgroundColor: generateColorFromName(value, 0.1),
+                      borderColor: generateColorFromName(value, 0.2),
+                    }} className="border-inherit text-xs"
+                  >{value}</Badge>}
+              </div>
+            )
+          }
+        } as ColumnDef<string>;
+      case "images":
+        return {
+          id: key,
+          accessorKey: key,
+          header: ({ column }) => (
+            // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
+            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          ),
+          filterFn: "auto",
+          cell: ({ row }) => {
+            const value = row.getValue(key) as string;
+            // eslint-disable-next-line @next/next/no-img-element
+            return <img src={value} alt="Image" className="max-w-[200px]" />
+          },
+          // filterFn: (row, id, value) => "auto"(row, id, value),
+        } as ColumnDef<string>;
+    }
+  }
+  );
   return columns;
 }
+
 // TODO: Make accessor generic
 // export const columns: ColumnDef<ColumnSchema>[] = [
 //   {

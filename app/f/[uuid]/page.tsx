@@ -130,6 +130,7 @@ export default function Page({
                                             <SelectItem value="boolean">Boolean</SelectItem>
                                             <SelectItem value="date">Date</SelectItem>
                                             <SelectItem value="url">URL</SelectItem>
+                                            <SelectItem value="url_preview">URL Preview</SelectItem>
                                             <SelectItem value="tags">Tags</SelectItem>
                                             <SelectItem value="images">Images</SelectItem>
                                         </SelectContent>

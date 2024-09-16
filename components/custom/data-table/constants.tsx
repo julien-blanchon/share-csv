@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { ColumnDefinitionType, ColumnType } from "./schema";
 import type { DataTableFilterField, Option } from "./types";
 
@@ -116,7 +117,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 
 // export const filterFields = Object.keys(columnType).map((key) => {
 //   const type = columnType[key];
-  
+
 //   const baseField = {
 //     label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the label
 //     value: key,
@@ -189,7 +190,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: Record<string, unknown>[]
 ) => Object.keys(columnDefinition).map((key) => {
   const type = columnDefinition[key];
-  
+
   const baseField = {
     label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the label
     value: key,
@@ -215,11 +216,67 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
           value: bool,
         })),
       };
-    case "images":
-    case "tags":
+
     case "string":
       return {
         ...baseField,
+        options: data.reduce((acc, item) => {
+          const values = item[key] as string | string[];
+          if (Array.isArray(values)) {
+            values.forEach((value) => {
+              if (!acc.some((option) => option.value === value)) {
+                acc.push({ label: value.toString().slice(0, 8), value });
+              }
+            });
+          } else {
+            if (!acc.some((option) => option.value === values)) {
+              acc.push({ label: values.toString().slice(0, 10) as string, value: values as string });
+            }
+          }
+          return acc;
+        }, [] as Option[]),
+      };
+
+    case "images":
+      return {
+        ...baseField,
+        options: data.reduce((acc, item) => {
+          const values = item[key] as string | string[];
+          if (Array.isArray(values)) {
+            values.forEach((value) => {
+              if (!acc.some((option) => option.value === value)) {
+                acc.push({ label: value.toString().slice(0, 8), value });
+              }
+            });
+          } else {
+            if (!acc.some((option) => option.value === values)) {
+              acc.push({ label: values.toString().slice(0, 10) as string, value: values as string });
+            }
+          }
+          return acc;
+        }, [] as Option[]),
+      };
+
+    case "tags":
+      return {
+        ...baseField,
+        type: "checkbox",
+        component: (props: Option) => {
+          if (typeof props.value === "boolean") return null;
+          if (typeof props.value === "undefined") return null;
+          return (
+            <div className="flex w-full items-center justify-between gap-2">
+              <span className="truncate font-normal">{props.value}</span>
+              <span
+                className={cn("h-2 w-2 rounded-full")}
+                style={{
+                  backgroundColor: generateColorFromName(props.value as string),
+                }}
+              />
+            </div>
+          );
+        },
+
         options: data.reduce((acc, item) => {
           const values = item[key] as string | string[];
           if (Array.isArray(values)) {
@@ -230,7 +287,7 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
             });
           } else {
             if (!acc.some((option) => option.value === values)) {
-              acc.push({ label: values as string, value: values as string});
+              acc.push({ label: values as string, value: values as string });
             }
           }
           return acc;
