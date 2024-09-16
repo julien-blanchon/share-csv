@@ -34,10 +34,6 @@ function shouldBeTags(values: any[]): boolean {
   const maxUniqueRatio = 0.1;
   const minDuplicateRatio = 0.05;
 
-  console.log('totalUnique', totalUnique);
-  console.log('duplicates', duplicates);
-  console.log('totalValues', totalValues);
-
   return (
     totalUnique / totalValues <= maxUniqueRatio &&
     duplicates / totalValues >= minDuplicateRatio
