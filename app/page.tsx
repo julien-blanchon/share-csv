@@ -1,7 +1,5 @@
 "use client";
-
 import Image from 'next/image'
-import { useEffect } from "react";
 import Dropzone from "@/components/custom/dropzone/dropzone";
 import { Separator } from "@/components/ui/separator";
 
