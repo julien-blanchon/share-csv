@@ -6,10 +6,6 @@ import Dropzone from "@/components/custom/dropzone/dropzone";
 import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
-  useEffect(() => {
-    fetch(`/api/views?slug=${"data-table"}`, { method: "POST" });
-  }, []);
-
   return (
     <div className="flex flex-col gap-10 justify-start items-center min-h-screen w-full">
       <Dropzone />
