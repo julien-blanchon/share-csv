@@ -4,22 +4,18 @@ import {
   Avatar as AvatarHolder,
 } from "@/components/ui/avatar"
 import {
-  CreditCard,
   LifeBuoy,
-  Settings,
   LogOut,
 } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "../../ui/button"
-import Link from "next/link"
 import { createClient } from '@/utils/supabase/client'; // Use the client-side Supabase client
 import { useRouter } from 'next/navigation'; // For client-side redirection
 import { useState } from "react";
