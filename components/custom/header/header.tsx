@@ -6,6 +6,7 @@ import { AvatarDropdown } from "./AvatarDropdown"
 import { FilesDropdown } from "./files-dropdown"
 import { ShareDialog } from "./share"
 import type { User as UserSupabase } from '@supabase/supabase-js';
+import Link from 'next/link'
 
 export default async function Component({ user }: { user: UserSupabase }) {
   const supabase = createClient()
@@ -14,7 +15,9 @@ export default async function Component({ user }: { user: UserSupabase }) {
   return (
     <div className="flex items-center justify-between w-full px-4 py-2 gap-2">
       {/* TODO: Fix display, height has no impact right now and it overlays with toggle*/}
-      <Image src="/logo.svg" alt="Logo" width="40" height="40" />
+      <Link href="/">
+        <Image src="/logo.svg" alt="Logo" width="40" height="40" />
+      </Link>
       {user && <FilesDropdown />}
 
       <div className="ml-auto flex gap-4">
