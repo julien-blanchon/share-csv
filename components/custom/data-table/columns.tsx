@@ -49,7 +49,13 @@ export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<
             // <DataTableColumnHeader type="string" column={column} title={key.charAt(0).toUpperCase() + key.slice(1)} />
             <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
           ),
-          filterFn: "auto",
+          filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+            if (typeof value === "string") return value === String(rowValue);
+            if (typeof value === "boolean") return value === rowValue;
+            if (Array.isArray(value)) return value.includes(rowValue);
+            return false;
+          },
           cell: ({ row }) => {
             const value = row.getValue(key) as boolean;
             return (value ? <Check className="h-4 w-4" /> : <Minus className="h-4 w-4 text-muted-foreground/50" />)
