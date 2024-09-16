@@ -21,9 +21,11 @@ export default async function Component() {
       {data?.user && <FilesDropdown />}
 
       <div className="ml-auto flex gap-4">
-        <ShareDialog />
         {data?.user ? (
-          <AvatarDropdown user={data.user} />
+          <>
+            <ShareDialog />
+            <AvatarDropdown user={data.user} />
+          </>
         ) : (
           <div className="flex gap-2">
             <LoginDialog />
