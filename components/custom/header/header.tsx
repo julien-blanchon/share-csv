@@ -8,7 +8,7 @@ import { ShareDialog } from "./share"
 import type { User as UserSupabase } from '@supabase/supabase-js';
 import Link from 'next/link'
 
-export default async function Component({ user }: { user: UserSupabase }) {
+export default async function Component() {
   const supabase = createClient()
   const { data } = await supabase.auth.getUser()
 
@@ -18,7 +18,7 @@ export default async function Component({ user }: { user: UserSupabase }) {
       <Link href="/">
         <Image src="/logo.svg" alt="Logo" width="40" height="40" />
       </Link>
-      {user && <FilesDropdown />}
+      {data?.user && <FilesDropdown />}
 
       <div className="ml-auto flex gap-4">
         <ShareDialog />
