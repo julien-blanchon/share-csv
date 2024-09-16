@@ -145,18 +145,24 @@ export function FilesDropdown() {
                     {isLoading ? (
                         <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
                     ) : (
-                        Object.entries(groupedMenuItems).map(([date, items]) => (
-                            <DropdownMenuGroup key={date}>
-                                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                                    {date}
-                                </DropdownMenuLabel>
-                                {items.map((item) => (
-                                    <DropdownMenuItem className="text-xs text-card-foreground/80" key={item.uuid} onSelect={() => handleFileClick(item.uuid)}>
-                                        {item.name}
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuGroup>
-                        ))
+                        Object.entries(groupedMenuItems)
+                            .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+                            .map(([date, items]) => (
+                                <DropdownMenuGroup key={date}>
+                                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                        {date}
+                                    </DropdownMenuLabel>
+                                    {items.map((item) => (
+                                        <DropdownMenuItem
+                                            className="text-xs text-card-foreground/80"
+                                            key={item.uuid}
+                                            onSelect={() => handleFileClick(item.uuid)}
+                                        >
+                                            {item.name}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
+                            ))
                     )}
                 </ScrollArea>
                 <DropdownMenuSeparator />
