@@ -129,7 +129,7 @@ const Dropzone = ({
                         })
 
                         // Use router.push for client-side navigation
-                        router.push(`/f/${uuid}`)
+                        router.push(`/f/${user_id}/${uuid}`)
                     } catch (error) {
                         console.error('Error uploading file:', error)
                         toast({

@@ -14,10 +14,10 @@ import {
 import { Copy } from "lucide-react"
 import { Share } from "lucide-react"
 
+
 export function ShareDialog() {
     const [isCopied, setIsCopied] = useState(false)
-    const shareUrl = "https://example.com/share-link" // Hardcoded URL for now
-    // TODO: Get share URL from page
+    const shareUrl = typeof window !== 'undefined' ? `${window.location}` : '';
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(shareUrl)
@@ -33,7 +33,7 @@ export function ShareDialog() {
                     Share
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[525px]">
                 <DialogHeader>
                     <DialogTitle className="text-xl">Share</DialogTitle>
                 </DialogHeader>
@@ -45,7 +45,7 @@ export function ShareDialog() {
                                 id="share-url"
                                 value={shareUrl}
                                 readOnly
-                                className="pr-10"
+                                className="pr-10 h-12"
                             />
                             <Button
                                 type="button"

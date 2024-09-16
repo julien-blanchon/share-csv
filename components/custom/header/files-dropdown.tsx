@@ -38,6 +38,8 @@ export function FilesDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const [filename, setFilename] = useState(''); // TODO: Get file name from url
+    const [user_id, setUserId] = useState('');
+
 
     useEffect(() => {
         fetchUserFiles();
@@ -82,6 +84,8 @@ export function FilesDropdown() {
             return;
         }
 
+        setUserId(userData.user.id);
+
         const { data: files, error: filesError } = await supabase
             .from('user_files')
             .select('*, files:files(*)')
@@ -114,7 +118,7 @@ export function FilesDropdown() {
     };
 
     const handleFileClick = (uuid: string) => {
-        router.push(`/f/${uuid}`);
+        router.push(`/f/${user_id}/${uuid}`);
     };
 
     return (
@@ -141,18 +145,24 @@ export function FilesDropdown() {
                     {isLoading ? (
                         <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
                     ) : (
-                        Object.entries(groupedMenuItems).map(([date, items]) => (
-                            <DropdownMenuGroup key={date}>
-                                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                                    {date}
-                                </DropdownMenuLabel>
-                                {items.map((item) => (
-                                    <DropdownMenuItem className="text-xs text-card-foreground/80" key={item.uuid} onSelect={() => handleFileClick(item.uuid)}>
-                                        {item.name}
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuGroup>
-                        ))
+                        Object.entries(groupedMenuItems)
+                            .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+                            .map(([date, items]) => (
+                                <DropdownMenuGroup key={date}>
+                                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                        {date}
+                                    </DropdownMenuLabel>
+                                    {items.map((item) => (
+                                        <DropdownMenuItem
+                                            className="text-xs text-card-foreground/80"
+                                            key={item.uuid}
+                                            onSelect={() => handleFileClick(item.uuid)}
+                                        >
+                                            {item.name}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
+                            ))
                     )}
                 </ScrollArea>
                 <DropdownMenuSeparator />
