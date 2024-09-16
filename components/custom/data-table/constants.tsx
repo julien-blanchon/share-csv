@@ -129,8 +129,8 @@ const filterTypeMap: Record<ColumnType, string> = {
 //       return {
 //         ...baseField,
 //         options: data.map((item) => ({
-//           label: item[key],
-//           value: item[key],
+//           label: key,
+//           value: key,
 //         })),
 //       };
 
@@ -148,7 +148,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 //       return {
 //         ...baseField,
 //         options: data.reduce((acc, item) => {
-//           const values = item[key];
+//           const values = key;
 //           if (Array.isArray(values)) {
 //             values.forEach((value) => {
 //               if (!acc.some((option) => option.value === value)) {
@@ -161,7 +161,7 @@ const filterTypeMap: Record<ColumnType, string> = {
 //       };
 
 //     case "number":
-//       const values = data.map((item) => item[key] || 0) as number[];
+//       const values = data.map((item) => key || 0) as number[];
 //       const minValue = Math.min(...values);
 //       const maxValue = Math.max(...values);
 //       return {
@@ -169,8 +169,8 @@ const filterTypeMap: Record<ColumnType, string> = {
 //         min: minValue,
 //         max: maxValue,
 //         options: data.map((item) => ({
-//           label: `${item[key]}`,
-//           value: item[key],
+//           label: `${key}`,
+//           value: key,
 //         })),
 //       };
 
@@ -194,16 +194,16 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
     label: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the label
     value: key,
     type: filterTypeMap[type],
+    defaultOpen: true,
   };
-  console.log('data', data);
   // Generate options for specific field types
   switch (type) {
     case "url":
       return {
         ...baseField,
         options: data.map((item) => ({
-          label: item[key],
-          value: item[key],
+          label: key,
+          value: item[key] as string,
         })),
       };
 
@@ -221,7 +221,7 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
       return {
         ...baseField,
         options: data.reduce((acc, item) => {
-          const values = item[key];
+          const values = item[key] as string | string[];
           if (Array.isArray(values)) {
             values.forEach((value) => {
               if (!acc.some((option) => option.value === value)) {
@@ -246,8 +246,8 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
         min: minValue,
         max: maxValue,
         options: data.map((item) => ({
-          label: `${item[key]}`,
-          value: item[key] as string,
+          label: `${key}`,
+          value: key as string,
         })),
       };
 
