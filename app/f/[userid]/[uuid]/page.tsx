@@ -17,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { z } from "zod";
 
 export default function Page({
     searchParams,
@@ -25,10 +26,10 @@ export default function Page({
 }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [csvData, setCsvData] = useState<Record<string, any>[]>([]);
-    const [columns, setColumns] = useState<ColumnDef<string>[]>([]);
+    const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
     const [filterFields, setFilterFields] = useState([]);
     const [columnDefinition, setColumnDefinition] = useState<ColumnDefinitionType>({}); // Column types
-    const [columnFilterSchema, setColumnFilterSchema] = useState({});
+    const [columnFilterSchema, setColumnFilterSchema] = useState<z.ZodObject<Record<string, z.ZodType>>>(z.object({}));
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const pathname = usePathname();
@@ -97,6 +98,8 @@ export default function Page({
     }, [supabase, uuid]);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         setFilterFields(makeFilterFields(columnDefinition, csvData));
     }, [columnDefinition, csvData]);
 

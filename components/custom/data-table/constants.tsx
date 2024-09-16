@@ -114,6 +114,7 @@ const filterTypeMap: Record<ColumnType, string> = {
   boolean: "checkbox",
   date: "timerange",
   url: "input",
+  url_preview: "input",
   tags: "checkbox",
   images: "input",
 };
@@ -321,4 +322,4 @@ export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: R
     default:
       return baseField;
   }
-}) satisfies DataTableFilterField<string>[];
+});

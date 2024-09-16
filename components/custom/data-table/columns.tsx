@@ -9,7 +9,7 @@ import { generateColorFromName } from "./constants";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { LinkPreview } from "@/components/ui/link-preview";
 
-export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<string>[] = (columnDefinition) => {
+export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<any>[] = (columnDefinition) => {
   const columns: ColumnDef<string>[] = Object.entries(columnDefinition).map(([key, type]) => {
     switch (type) {
       case "string":

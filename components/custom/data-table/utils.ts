@@ -21,14 +21,14 @@ export function deserialize<T extends z.AnyZodObject>(schema: T) {
   return (value: string) => castToSchema.safeParse(value);
 }
 
-export const parseCSV: (input: string) => Record<string, unknown>[] = (input: string) => {
+export const parseCSV: (input: string) => Record<string, any>[] = (input: string) => {
   // Parse the input using PapaParse, or any library of your choice
   const parsed = Papa.parse(input, {
     header: true, // Treat first row as header
     skipEmptyLines: true,
     dynamicTyping: true,
   });
-  return parsed.data; // Parsed data as array of objects
+  return parsed.data as Record<string, any>[];
 };
 
 

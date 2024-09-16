@@ -18,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { type User as UserSupabase } from "@/types/user"
 import { Button } from "../../ui/button"
 import Link from "next/link"
 import { createClient } from '@/utils/supabase/client'; // Use the client-side Supabase client
@@ -31,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import type { User as UserSupabase } from '@supabase/supabase-js';
 
 export function AvatarDropdown({ user }: { user: UserSupabase }) {
   const [loading, setLoading] = useState(false); // To manage loading state

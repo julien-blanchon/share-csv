@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:types": "pnpm dlx supabase gen types --lang=typescript --project-id vcczscebvlbfsdiymzbq > ./lib/supabase-types.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
