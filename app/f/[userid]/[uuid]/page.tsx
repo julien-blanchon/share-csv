@@ -5,18 +5,11 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { parseCSV } from "@/components/custom/data-table/utils";
 import { DataTable } from "@/components/custom/data-table/data-table";
-import { ColumnDefinitionType, ColumnType, createFilterSchema } from "@/components/custom/data-table/schema";
+import { type ColumnDefinitionType, type ColumnType, createFilterSchema } from "@/components/custom/data-table/schema";
 import { makeFilterFields } from "@/components/custom/data-table/constants";
 import { makeColumns } from "@/components/custom/data-table/columns";
 import { ColumnDef } from "@tanstack/react-table";
 import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { z } from "zod";
 
 export default function Page({
@@ -116,40 +109,14 @@ export default function Page({
 
     return (
         <div className="container mx-auto h-full">
-            {
-                columns.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                        {columns.map((column) => (
-                            column.id !== undefined && (
-                                <div key={column.id}>
-                                    <Label>{column.id}</Label>
-                                    <Select onValueChange={(value) => handleColumnTypeChange(column.id as string, value as ColumnType)}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder={column.id} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="string">String</SelectItem>
-                                            <SelectItem value="number">Number</SelectItem>
-                                            <SelectItem value="boolean">Boolean</SelectItem>
-                                            <SelectItem value="date">Date</SelectItem>
-                                            <SelectItem value="url">URL</SelectItem>
-                                            <SelectItem value="url_preview">URL Preview</SelectItem>
-                                            <SelectItem value="tags">Tags</SelectItem>
-                                            <SelectItem value="images">Images</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )
-                        ))}
-                    </div>
-                )
-            }
             <div>
                 <DataTable
                     columns={columns}
                     data={csvData}
                     filterFields={filterFields}
                     columnFilterSchema={columnFilterSchema}
+                    columnDefinition={columnDefinition}
+                    handleColumnTypeChange={handleColumnTypeChange}
                 // defaultColumnFilters={Object.entries(search.data).map(([key, value]) => ({
                 //   id: key,
                 //   value,

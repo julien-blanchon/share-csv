@@ -1,5 +1,6 @@
 "use client";
 
+import { type ColumnDefinitionType } from "@/components/custom/data-table/schema";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -20,7 +21,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-
+import { type ColumnType } from "@/components/custom/data-table/schema";
 import {
   Table,
   TableBody,
@@ -46,6 +47,8 @@ interface DataTableProps<TData extends RowData, TValue> {
   defaultColumnFilters?: ColumnFiltersState;
   filterFields?: DataTableFilterField<TData>[];
   columnFilterSchema: z.ZodObject<Record<string, z.ZodType>>;
+  columnDefinition: ColumnDefinitionType;
+  handleColumnTypeChange: (column: string, type: ColumnType) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -54,6 +57,8 @@ export function DataTable<TData, TValue>({
   defaultColumnFilters = [],
   filterFields = [],
   columnFilterSchema,
+  columnDefinition,
+  handleColumnTypeChange,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -148,6 +153,8 @@ export function DataTable<TData, TValue>({
           <DataTableFilterControls
             table={table}
             filterFields={filterFields}
+            columnDefinition={columnDefinition}
+            handleColumnTypeChange={handleColumnTypeChange}
           />
         </div>
       </div>
