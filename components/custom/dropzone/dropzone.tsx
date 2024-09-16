@@ -8,6 +8,8 @@ import { createClient } from '@/utils/supabase/client'
 import { useToast } from "@/components/ui/use-toast" // Add this import
 import { useRouter } from 'next/navigation' // Change this import
 import { Button } from "@/components/ui/button";
+import { LoginDialog } from '@/components/custom/header/login'
+import { Loader2 } from 'lucide-react' // Add this import
 
 // Typescript:
 import {
@@ -91,6 +93,10 @@ const Dropzone = ({
     const { toast } = useToast()
     const router = useRouter()
 
+    // Add this state
+    const [showLoginDialog, setShowLoginDialog] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+
     // Constants:
     const dropzone = useDropzone({
         ...props,
@@ -104,15 +110,13 @@ const Dropzone = ({
             if (props.onDrop) {
                 props.onDrop(acceptedFiles, fileRejections, event)
             } else {
+                setIsUploading(true) // Set uploading state to true
                 const { data, error } = await supabase.auth.getUser()
 
                 if (!data.user) {
                     console.error('No user')
-                    toast({
-                        title: "Error",
-                        description: "Please log in to upload files.",
-                        variant: "destructive",
-                    })
+                    setShowLoginDialog(true)
+                    setIsUploading(false)
                     return
                 }
 
@@ -153,6 +157,7 @@ const Dropzone = ({
                 } else {
                     setErrorMessage('')
                 }
+                // setIsUploading(false) // Set uploading state back to false
             }
         },
     })
@@ -174,38 +179,47 @@ const Dropzone = ({
         <div
             className={cn('flex flex-col gap-2 w-full', containerClassName)}
         >
-            <div
-                {...dropzone.getRootProps()}
-                className={cn('flex flex-col items-center justify-center w-full h-full min-h-[500px] flex-grow border-dashed border-2 border-gray-200 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all select-none cursor-pointer', dropZoneClassName)}
-            >
-                <div className='flex flex-col items-center gap-4'>
-                    <div className='flex items-center flex-col gap-3 p-12 w-full'>
-                        <FileSpreadsheet className='w-24 h-24 text-gray-400' />
+            {isUploading ? (
+                <div className={cn('flex flex-col items-center justify-center w-full h-full min-h-[500px] flex-grow border-dashed border-2 border-gray-200 rounded-lg', dropZoneClassName)}>
+                    <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                    <p className="mt-4 text-lg">Uploading file...</p>
+                </div>
+            ) : (
+                <div
+                    {...dropzone.getRootProps()}
+                    className={cn('flex flex-col items-center justify-center w-full h-full min-h-[500px] flex-grow border-dashed border-2 border-gray-200 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all select-none cursor-pointer', dropZoneClassName)}
+                >
+                    <div className='flex flex-col items-center gap-4'>
+                        <div className='flex items-center flex-col gap-3 p-12 w-full'>
+                            <FileSpreadsheet className='w-24 h-24 text-gray-400' />
 
-                        {
-                            children ? (
-                                <div className="flex items-center justify-center h-full w-full">
-                                    {children(dropzone)}
-                                </div>
-                            ) : dropzone.isDragAccept ? (
-                                <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
-                                    <div className='text-2xl font-medium'>Drop your file here</div>
-                                    <div className='text-lg text-gray-500'>let it go</div>
-                                </div>
-                            ) : (
-                                <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
-                                    <div className='text-2xl font-medium'>Upload a new file</div>
-                                    <div className='text-lg text-gray-500'>Drag and drop your csv or excel file anywhere in this box</div>
-                                    <Button className="mt-4">
-                                        Upload
-                                    </Button>
-                                </div>
-                            )
-                        }
+                            {
+                                children ? (
+                                    <div className="flex items-center justify-center h-full w-full">
+                                        {children(dropzone)}
+                                    </div>
+                                ) : dropzone.isDragAccept ? (
+                                    <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
+                                        <div className='text-2xl font-medium'>Drop your file here</div>
+                                        <div className='text-lg text-gray-500'>let it go</div>
+                                    </div>
+                                ) : (
+                                    <div className='flex items-center justify-center flex-col gap-1 h-full w-full'>
+                                        <div className='text-2xl font-medium'>Upload a new file</div>
+                                        <div className='text-lg text-gray-500'>Drag and drop your csv or excel file anywhere in this box</div>
+                                        <Button className="mt-4" size="lg">
+                                            Upload
+                                        </Button>
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
+            {/* Add LoginDialog here */}
+            <LoginDialog open={showLoginDialog} setOpen={setShowLoginDialog} hideTrigger={true} />
         </div>
     )
 }

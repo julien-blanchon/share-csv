@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,12 +17,20 @@ import { login } from "@/app/api/account/actions"
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
 
-export function LoginDialog() {
+interface LoginDialogProps {
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  hideTrigger?: boolean; // New prop
+}
+
+export function LoginDialog({ open, setOpen, hideTrigger = false }: LoginDialogProps) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Login</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button variant="outline">Login</Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-xl">Login</DialogTitle>
@@ -49,7 +59,7 @@ export function LoginDialog() {
               </div>
               <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={() => setOpen?.(false)}>
               Login
             </Button>
           </div>
