@@ -105,7 +105,9 @@ export default function Page({
     }, [columnDefinition]);
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+    if (error) return <div className="text-red-500 text-3xl flex items-center justify-center h-full">
+        {error}
+    </div>;
 
     return (
         <div className="container mx-auto h-full">
