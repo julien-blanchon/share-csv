@@ -19,7 +19,6 @@ const stringToBoolean = z
     try {
       return JSON.parse(val);
     } catch (e) {
-      console.log(e);
       return undefined;
     }
   })

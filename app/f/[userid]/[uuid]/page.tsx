@@ -55,9 +55,7 @@ export default function Page({
 
                 // Convert file to text and parse it
                 const csvText = await fileData.text();
-                console.log("csvText", csvText);
                 const parsedData = parseCSV(csvText);
-                console.log("parsedData", parsedData);
 
                 // Set the parsed CSV data in state
                 setCsvData(parsedData);
@@ -74,9 +72,7 @@ export default function Page({
                 ) as ColumnDefinitionType;
 
                 const newColumnTypes = (fileSchemaData.schema || defaultColumnTypes) as ColumnDefinitionType;
-
-                console.log("newColumnTypes", newColumnTypes);
-
+                
                 setColumnDefinition(newColumnTypes);
                 setColumns(makeColumns(newColumnTypes));
             } catch (err) {
