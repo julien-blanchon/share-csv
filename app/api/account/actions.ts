@@ -1,14 +1,4 @@
 'use server'
-// import type { NextApiRequest, NextApiResponse } from 'next'
-// import { z } from 'zod'
-// const loginSchema = z.object({
-//   // ...
-// })
-
-// const registerSchema = z.object({
-//   // ...
-// })
-
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
@@ -24,9 +14,6 @@ export async function signup(formData: FormData) {
     lastName: formData.get('last-name') as string,
   }
 
-  // Optionally validate form data here
-  console.log('Signup data:', data)
-
   // Attempt sign up
   const { error } = await supabase.auth.signUp({
     email: data.email,
@@ -40,11 +27,13 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    console.log('Signup error:', error)
     // Redirect to an error page or show an error message
     redirect('/error')
   }
 
+  // Log the user in
+  await login(formData)
+  
   // Revalidate path or perform other actions upon success
   revalidatePath('/')
   redirect('/')
@@ -58,9 +47,6 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
-
-  // Optionally validate form data here
-  console.log('Login data:', data)
 
   // Attempt to sign in
   const { error } = await supabase.auth.signInWithPassword({
