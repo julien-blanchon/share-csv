@@ -17,7 +17,7 @@ import { Share } from "lucide-react"
 
 export function ShareDialog() {
     const [isCopied, setIsCopied] = useState(false)
-    const shareUrl = typeof window !== 'undefined' ? `${window.location}` : '';
+    const shareUrl = typeof window !== "undefined" ? window.location.href : ""
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(shareUrl)
