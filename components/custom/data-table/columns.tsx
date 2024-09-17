@@ -33,6 +33,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
           ...baseColumn,
           cell: ({ row }) => <span>{row.getValue(key)}</span>,
           filterFn: "auto",
+          header: ({ column }) => <span>{capitalizeFirstLetter(key)}</span>,
         } as ColumnDef<any>;
 
       case "number":
@@ -72,8 +73,13 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
           ...baseColumn,
           cell: ({ row }) => {
             const value = row.getValue(key) as string;
-            const date = format(new Date(value), "LLL dd, y HH:mm");
-            return <span className="text-muted-foreground">{date}</span>;
+            try {
+              const date = format(new Date(value), "LLL dd, y HH:mm");
+              return <span className="text-muted-foreground">{date}</span>;
+            } catch (error) {
+              console.error("Error parsing date", error);
+              return <span className="text-muted-foreground">{value}</span>;
+            }
           },
           filterFn: "auto",
         } as ColumnDef<any>;
@@ -90,6 +96,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             );
           },
           enableColumnFilter: false,
+          header: ({ column }) => <span>{capitalizeFirstLetter(key)}</span>,
         } as ColumnDef<any>;
 
       case "tags":
@@ -118,6 +125,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             );
           },
           filterFn: "auto",
+          header: ({ column }) => <span>{capitalizeFirstLetter(key)}</span>,
         } as ColumnDef<any>;
 
       case "images":
@@ -129,6 +137,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             return <img src={value} alt="Image" className="max-w-[200px]" />;
           },
           enableColumnFilter: false,
+          header: ({ column }) => <span>{capitalizeFirstLetter(key)}</span>,
         } as ColumnDef<any>;
 
       default:
