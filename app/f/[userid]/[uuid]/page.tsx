@@ -26,7 +26,8 @@ export default function Page({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const pathname = usePathname();
-    const uuid = pathname.split("/").pop(); // Get the UUID from the pathname
+    const userId = pathname.split("/")[2]; // Get the user ID from the pathname
+    const uuid = pathname.split("/")?.[3]; // Get the UUID from the pathname
     const supabase = createClient();
 
     // Handle column type change
@@ -40,11 +41,6 @@ export default function Page({
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Get user info
-                const { data: userData, error: userError } = await supabase.auth.getUser();
-                if (userError) throw userError;
-
-                const userId = userData?.user?.id;
                 const fileExtension = "csv";
                 const fileName = `${uuid}.${fileExtension}`;
                 const filePath = `${userId}/${fileName}`;
