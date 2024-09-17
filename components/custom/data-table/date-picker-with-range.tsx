@@ -92,7 +92,6 @@ export function DatePickerWithRange({
   );
 }
 
-// TODO: probably move to `constants` file
 const presets = [
   {
     label: "Today",
