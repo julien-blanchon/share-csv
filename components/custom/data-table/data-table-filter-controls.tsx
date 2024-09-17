@@ -8,12 +8,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import type React from "react";
 import type { DataTableFilterField } from "./types";
 import { DataTableFilterResetButton } from "./data-table-filter-reset-button";
@@ -136,15 +130,15 @@ export function DataTableFilterControls<TData>({
 
               <AccordionContent className="-m-4 p-4">
                 <div className="flex items-center space-x-2">
-                  <div className="flex items-center border-input ring-offset-background focus-visible:ring-ring group flex h-9 w-full rounded-md border bg-transparent text-sm focus-within:outline-none focus-visible:ring-2 focus-within:ring-offset-2 overflow-hidden">
-                    <div className="flex items-center border-input bg-muted border-r px-3 py-2">
+                  <div className="items-center border-input ring-offset-background focus-visible:ring-ring group flex h-9 w-full rounded-md border bg-transparent text-sm focus-within:outline-none focus-visible:ring-2 focus-within:ring-offset-2 overflow-hidden">
+                    <div className="flex items-center border-input bg-muted border-r px-3 h-full">
                       {iconMap[currentType]}
                     </div>
                     <Select
                       value={currentType}
                       onValueChange={(value) => handleColumnTypeChange(field.value as string, value as ColumnType)}
                     >
-                      <SelectTrigger id={`type-select-${field.value}`} className="w-full border-0 focus:ring-0 focus:ring-offset-0">
+                      <SelectTrigger id={`type-select-${field.value as string}`} className="w-full border-0 focus:ring-0 focus:ring-offset-0">
                         <SelectValue placeholder="Select a type">
                           <div className="flex items-center text-muted-foreground">
                             <span>{currentType}</span>
