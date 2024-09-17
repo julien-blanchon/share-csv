@@ -22,6 +22,11 @@ export function DataTableFilterSlider<TData>({
   min,
   max,
 }: DataTableFilterSliderProps<TData>) {
+  // Check if min and max are valid numbers
+  if (typeof min !== 'number' || isNaN(min) || typeof max !== 'number' || isNaN(max)) {
+    return null; // Return nothing if min or max is invalid
+  }
+
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
   const router = useRouter();
@@ -32,8 +37,8 @@ export function DataTableFilterSlider<TData>({
     return typeof filterValue === "number"
       ? [filterValue, filterValue]
       : Array.isArray(filterValue) && isArrayOfNumbers(filterValue)
-      ? filterValue
-      : [min, max];
+        ? filterValue
+        : [min, max];
   }, [filterValue, min, max]);
 
   // Local state to update the slider value instantly
