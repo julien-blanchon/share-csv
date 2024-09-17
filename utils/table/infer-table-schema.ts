@@ -46,27 +46,28 @@ export function getColumnTypes(
   data: Record<string, any>[], // The data is an array of objects with dynamic keys
   keys: string[] | "all" = "all", // The keys can be provided or can be "all"
   entryLimit: number | "all" = "all" // Limit the number of rows to process or process all rows
-): ColumnDefinitionType {
+): Record<string, { position: number; type: string }> {
   const columns = keys === "all" ? Object.keys(data[0]) : keys;
 
   // Get entries to check: either all or a random sample
   const rowsToCheck = entryLimit === "all" ? data : getRandomEntries(data, entryLimit);
 
-  const columnTypes: ColumnDefinitionType = {};
+  const columnTypes: Record<string, { position: number; type: string }> = {}; // Changed to a dict with colname as key
 
-  for (const key of columns) {
+  for (let index = 0; index < columns.length; index++) {
+    const key = columns[index];
     const values = rowsToCheck.map(row => row[key]);
 
     // Check if column should be treated as "tags"
     if (shouldBeTags(values)) {
-      columnTypes[key] = "tags";
+      columnTypes[key] = { position: index + 1, type: "tags" }; // Updated to use colname as key
     } else {
       // Fallback to detecting individual types
-      columnTypes[key] = detectColumnType(values[0]);
+      columnTypes[key] = { position: index + 1, type: detectColumnType(values[0]) }; // Updated to use colname as key
     }
   }
 
-  return columnTypes;
+  return columnTypes; // No change needed here
 }
 
 // Utility function to get random entries (for sampling)

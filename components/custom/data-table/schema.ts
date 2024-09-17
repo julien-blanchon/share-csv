@@ -9,7 +9,7 @@ export const RANGE_DELIMITER = "-";
 
 /** Column types definition */
 export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags" | "images";
-export type ColumnDefinitionType = Record<string, ColumnType>;
+export type ColumnDefinitionType = Record<string, { position: number; type: ColumnType }>; // Updated to new format
 
 /** Helper function to convert strings to booleans */
 const stringToBoolean = z
@@ -49,7 +49,7 @@ const getColumnSchema = (type: ColumnType) => {
 export const createColumnSchema = (columnDefinition: ColumnDefinitionType) => {
   const schema = z.object(
     Object.fromEntries(
-      Object.entries(columnDefinition).map(([key, type]) => [
+      Object.entries(columnDefinition).map(([key, { position, type }]) => [ // Destructured to get position and type
         key,
         getColumnSchema(type),
       ])
@@ -113,11 +113,16 @@ const getFilterSchema = (type: ColumnType) => {
 export const createFilterSchema = (columnDefinition: ColumnDefinitionType) => {
   const schema = z.object(
     Object.fromEntries(
-      Object.entries(columnDefinition).map(([key, type]) => [
-        key,
-        getFilterSchema(type),
-      ])
+      Object.entries(columnDefinition)
+        .sort(([, a], [, b]) => a.position - b.position) // Sort by position
+        .map(([key, { type }]) => [ // Destructured to get type
+          key,
+          getFilterSchema(type),
+        ])
     )
   );
+
+  console.log(schema)
+
   return schema;
 }

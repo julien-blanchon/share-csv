@@ -32,13 +32,15 @@ export async function uploadFileToBucket(file: File, userId: string) {
     // If new columns found, add them to columnDefinition with a default "string" type
     const schema = getColumnTypes(parsedData);
 
+    console.log(schema)
+
     // Insert file information into the files table
     const { data: fileData, error: fileError } = await supabase
         .from('files')
         .insert({
             id: uuid,
             filename: file.name,
-            schema: schema, 
+            schema: schema,
             bucket: 'files',
             blob_path: filePath,
         })

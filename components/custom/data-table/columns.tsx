@@ -20,7 +20,7 @@ const createDefaultHeader = (key: string, column: any) => (
 
 // Function to create columns based on the column definition
 export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<any>[] => {
-  return Object.entries(columnDefinition).map(([key, type]): ColumnDef<any> => {
+  return Object.entries(columnDefinition).map(([key, { type }]): ColumnDef<any> => { // Updated to access type from new schema
     const baseColumn: Partial<ColumnDef<any>> = {
       id: key,
       accessorKey: key,
