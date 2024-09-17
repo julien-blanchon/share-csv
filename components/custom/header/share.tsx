@@ -13,11 +13,11 @@ import {
 } from "@/components/ui/dialog"
 import { Copy } from "lucide-react"
 import { Share } from "lucide-react"
-
+import { usePathname } from "next/navigation"
 
 export function ShareDialog() {
     const [isCopied, setIsCopied] = useState(false)
-    const shareUrl = typeof window !== "undefined" ? window.location.href : ""
+    const shareUrl = `${window.location.origin}${usePathname()}`
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(shareUrl)
