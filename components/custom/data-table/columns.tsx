@@ -25,7 +25,6 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
       id: key,
       accessorKey: key,
       header: ({ column }) => createDefaultHeader(key, column),
-      filterFn: "auto",
     };
 
     switch (type) {
@@ -33,6 +32,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
         return {
           ...baseColumn,
           cell: ({ row }) => <span>{row.getValue(key)}</span>,
+          filterFn: "auto",
         } as ColumnDef<any>;
 
       case "number":
@@ -42,17 +42,27 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             const value = row.getValue(key) as number;
             return value ? <span>{value}</span> : <Minus className="h-4 w-4 text-muted-foreground/50" />;
           },
+          filterFn: "auto",
         } as ColumnDef<any>;
 
       case "boolean":
         return {
           ...baseColumn,
           filterFn: (row, id, value) => {
-            const rowValue = row.getValue(id);
+            const _rowValue = row.getValue(id);
+            const rowValue = typeof _rowValue === "string" ? _rowValue.toLowerCase() === "true" : _rowValue;
             return Array.isArray(value) ? value.includes(rowValue) : value === rowValue;
+            // return Array.isArray(value) ? value.includes(rowValue) : value === rowValue;
           },
           cell: ({ row }) => {
-            const value = row.getValue(key) as boolean;
+            const _value = row.getValue(key)
+            let value: boolean;
+            // if _value is a string, convert it to a boolean
+            if (typeof _value === "string") {
+              value = _value.toLowerCase() === "true";
+            } else {
+              value = _value as boolean;
+            }
             return value ? <Check className="h-4 w-4" /> : <Minus className="h-4 w-4 text-muted-foreground/50" />;
           },
         } as ColumnDef<any>;
@@ -65,6 +75,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             const date = format(new Date(value), "LLL dd, y HH:mm");
             return <span className="text-muted-foreground">{date}</span>;
           },
+          filterFn: "auto",
         } as ColumnDef<any>;
 
       case "url":
@@ -78,6 +89,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
               </LinkPreview>
             );
           },
+          enableColumnFilter: false,
         } as ColumnDef<any>;
 
       case "tags":
@@ -105,6 +117,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
               </div>
             );
           },
+          filterFn: "auto",
         } as ColumnDef<any>;
 
       case "images":
@@ -115,6 +128,7 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
             // eslint-disable-next-line @next/next/no-img-element
             return <img src={value} alt="Image" className="max-w-[200px]" />;
           },
+          enableColumnFilter: false,
         } as ColumnDef<any>;
 
       default:
