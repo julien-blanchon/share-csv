@@ -67,6 +67,7 @@ export function DataTableFilterControls<TData>({
   columnDefinition,
   handleColumnTypeChange,
 }: DataTableFilterControlsProps<TData>) {
+  console.log(columnDefinition)
   const filters = table.getState().columnFilters;
   const updateSearchParams = useUpdateSearchParams();
   const router = useRouter();
@@ -75,6 +76,12 @@ export function DataTableFilterControls<TData>({
     const newSearchParams = updateSearchParams(values);
     router.replace(`?${newSearchParams}`, { scroll: false });
   };
+
+  const orderedFilterFields = filterFields?.sort((a, b) => {
+    const positionA = columnDefinition[a.value as string]?.position || 0;
+    const positionB = columnDefinition[b.value as string]?.position || 0;
+    return positionA - positionB;
+  }) || [];
 
   return (
     <div className="flex flex-col gap-4">
@@ -106,11 +113,11 @@ export function DataTableFilterControls<TData>({
       <Accordion
         type="multiple"
         // REMINDER: open all filters by default
-        defaultValue={filterFields
+        defaultValue={orderedFilterFields
           ?.filter(({ defaultOpen }) => defaultOpen)
           ?.map(({ value }) => value as string)}
       >
-        {filterFields?.map((field) => {
+        {orderedFilterFields.map((field) => {
           const currentType = columnDefinition[field.value as string]["type"];
           return (
             <AccordionItem
