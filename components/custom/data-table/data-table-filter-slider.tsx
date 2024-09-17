@@ -3,7 +3,8 @@
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
 import type { Table } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { debounce } from "lodash";
 import type { DataTableSliderFilterField } from "./types";
 import { InputWithAddons } from "@/components/ui/input-with-addons";
 import { Label } from "@/components/ui/label";
@@ -14,9 +15,6 @@ import { SLIDER_DELIMITER } from "./schema";
 type DataTableFilterSliderProps<TData> = DataTableSliderFilterField<TData> & {
   table: Table<TData>;
 };
-
-// TBD: add debounce to reduce to number of filters
-// TODO: extract onChange
 
 export function DataTableFilterSlider<TData>({
   table,
@@ -30,12 +28,16 @@ export function DataTableFilterSlider<TData>({
   const column = table.getColumn(value);
   const filterValue = column?.getFilterValue();
 
-  const filters =
-    typeof filterValue === "number"
+  const filters = useMemo(() => {
+    return typeof filterValue === "number"
       ? [filterValue, filterValue]
       : Array.isArray(filterValue) && isArrayOfNumbers(filterValue)
       ? filterValue
-      : undefined;
+      : [min, max];
+  }, [filterValue, min, max]);
+
+  // Local state to update the slider value instantly
+  const [sliderValue, setSliderValue] = useState<number[]>(filters);
 
   const updatePageSearchParams = useCallback(
     (values: Record<string, string | null>) => {
@@ -43,6 +45,35 @@ export function DataTableFilterSlider<TData>({
       router.replace(`?${newSearchParams}`, { scroll: false });
     },
     [router, updateSearchParams]
+  );
+
+  // Debounce the search params update but allow immediate value updates in the UI
+  const debouncedHandleChange = useMemo(
+    () =>
+      debounce((newValue: number[]) => {
+        column?.setFilterValue(newValue);
+        updatePageSearchParams({
+          [value]: newValue.join(SLIDER_DELIMITER),
+        });
+      }, 300), // 300ms debounce delay
+    [column, updatePageSearchParams, value]
+  );
+
+  const handleSliderChange = (newValue: number[]) => {
+    setSliderValue(newValue); // Update slider value instantly
+    debouncedHandleChange(newValue); // Update the search params after debounce
+  };
+
+  const handleInputChange = useCallback(
+    (inputValue: number, isMin: boolean) => {
+      const otherValue = isMin ? sliderValue[1] ?? max : sliderValue[0] ?? min;
+      const newValue = isMin
+        ? [inputValue, Math.max(inputValue, otherValue)]
+        : [Math.min(inputValue, otherValue), inputValue];
+      setSliderValue(newValue); // Update slider value instantly
+      debouncedHandleChange(newValue); // Debounce search params update
+    },
+    [sliderValue, min, max, debouncedHandleChange]
   );
 
   return (
@@ -61,19 +92,12 @@ export function DataTableFilterSlider<TData>({
             type="number"
             name={`min-${value}`}
             id={`min-${value}`}
-            value={`${filters?.[0] ?? min}`}
+            value={`${sliderValue[0] ?? min}`}
             min={min}
             max={max}
             onChange={(e) => {
-              const val = Number.parseInt(e.target.value) || 0;
-              const newValue =
-                Array.isArray(filters) && val < filters[1]
-                  ? [val, filters[1]]
-                  : [val, max];
-              column?.setFilterValue(newValue);
-              updatePageSearchParams({
-                [value]: newValue.join(SLIDER_DELIMITER),
-              });
+              const val = Number.parseInt(e.target.value) || min;
+              handleInputChange(val, true);
             }}
           />
         </div>
@@ -90,19 +114,12 @@ export function DataTableFilterSlider<TData>({
             type="number"
             name={`max-${value}`}
             id={`max-${value}`}
-            value={`${filters?.[1] ?? max}`}
+            value={`${sliderValue[1] ?? max}`}
             min={min}
             max={max}
             onChange={(e) => {
-              const val = Number.parseInt(e.target.value) || 0;
-              const newValue =
-                Array.isArray(filters) && val > filters[0]
-                  ? [filters[0], val]
-                  : [min, val];
-              column?.setFilterValue(newValue);
-              updatePageSearchParams({
-                [value]: newValue.join(SLIDER_DELIMITER),
-              });
+              const val = Number.parseInt(e.target.value) || max;
+              handleInputChange(val, false);
             }}
           />
         </div>
@@ -110,13 +127,8 @@ export function DataTableFilterSlider<TData>({
       <Slider
         min={min}
         max={max}
-        value={filters || [min, max]}
-        onValueChange={(values) => {
-          column?.setFilterValue(values);
-          updatePageSearchParams({
-            [value]: values.join(SLIDER_DELIMITER),
-          });
-        }}
+        value={sliderValue}
+        onValueChange={handleSliderChange}
       />
     </div>
   );
