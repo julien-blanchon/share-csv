@@ -31,6 +31,12 @@ export type Timerange = {
   options?: Option[]; // required for TS
 };
 
+export type NotSearchable = {
+  type: "none";
+  options?: Option[]; // required for TS
+};
+
+
 export type Base<TData> = {
   label: string;
   value: keyof TData;
@@ -48,9 +54,11 @@ export type DataTableCheckboxFilterField<TData> = Base<TData> & Checkbox;
 export type DataTableSliderFilterField<TData> = Base<TData> & Slider;
 export type DataTableInputFilterField<TData> = Base<TData> & Input;
 export type DataTableTimerangeFilterField<TData> = Base<TData> & Timerange;
+export type DataTableNotSearchableField<TData> = Base<TData> & NotSearchable;
 
 export type DataTableFilterField<TData> =
   | DataTableCheckboxFilterField<TData>
   | DataTableSliderFilterField<TData>
   | DataTableInputFilterField<TData>
-  | DataTableTimerangeFilterField<TData>;
+  | DataTableTimerangeFilterField<TData>
+  | DataTableNotSearchableField<TData>;

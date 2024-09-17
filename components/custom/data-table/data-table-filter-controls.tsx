@@ -175,6 +175,9 @@ export function DataTableFilterControls<TData>({
                       case "input": {
                         return <DataTableFilterInput table={table} {...field} />;
                       }
+                      case "none": {
+                        return null;
+                      }
                       case "timerange": {
                         return (
                           <DataTableFilterTimerange table={table} {...field} />
