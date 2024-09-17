@@ -5,9 +5,10 @@ import { ColumnDefinitionType, ColumnType } from "./schema";
 import type { DataTableFilterField, Option } from "./types";
 
 export const generateColorFromName = (name: string | number, opacity = 1) => {
-  if (typeof name === 'number') {
+  if (typeof name !== 'string') {
     name = name.toString();
   }
+  // console.log(name) // Consider removing or commenting out for production
   const hash = name
     .split("")
     .reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
