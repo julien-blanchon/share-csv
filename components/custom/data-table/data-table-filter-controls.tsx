@@ -26,12 +26,26 @@ import { DataTableFilterInput } from "./data-table-filter-input";
 import { DataTableFilterTimerange } from "./data-table-filter-timerange";
 import { X, Text, Hash, CheckSquare, Calendar, Link, Link2, Tag, FileImage } from "lucide-react";
 import { type ColumnType } from "@/components/custom/data-table/schema";
-
+import { Separator } from "@/components/ui/separator";
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 import { type ColumnDefinitionType } from "@/components/custom/data-table/schema";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label";
 
 // TODO: only pass the columns to generate the filters!
 // https://tanstack.com/table/v8/docs/framework/react/examples/filters
@@ -103,6 +117,7 @@ export function DataTableFilterControls<TData>({
           ?.map(({ value }) => value as string)}
       >
         {filterFields?.map((field) => {
+          const currentType = columnDefinition[field.value as string];
           return (
             <AccordionItem
               key={field.value as string}
@@ -120,125 +135,60 @@ export function DataTableFilterControls<TData>({
               </AccordionTrigger>
 
               <AccordionContent className="-m-4 p-4">
-                <div>
-                  <ToggleGroup type="single" className="my-2 mx-2 pb-2 grid grid-cols-4 gap-1"
-                    onValueChange={(value) => {
-                      handleColumnTypeChange(field.value as string, value.toString() as ColumnType);
-                    }}>
-                    <ToggleGroupItem className="border border-border" value="string" aria-label="Toggle String">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Text className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            String
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="number" aria-label="Toggle Number">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Hash className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            Number
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="boolean" aria-label="Toggle Boolean">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <CheckSquare className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            Boolean
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="date" aria-label="Toggle Date">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Calendar className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            Date
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="url" aria-label="Toggle URL">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            URL
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="tags" aria-label="Toggle Tags">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Tag className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            Tags
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="images" aria-label="Toggle Images">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <FileImage className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            Images
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-
-                  </ToggleGroup>
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center border-input ring-offset-background focus-visible:ring-ring group flex h-9 w-full rounded-md border bg-transparent text-sm focus-within:outline-none focus-visible:ring-2 focus-within:ring-offset-2 overflow-hidden">
+                    <div className="flex items-center border-input bg-muted border-r px-3 py-2">
+                      {iconMap[currentType]}
+                    </div>
+                    <Select
+                      value={currentType}
+                      onValueChange={(value) => handleColumnTypeChange(field.value as string, value as ColumnType)}
+                    >
+                      <SelectTrigger id={`type-select-${field.value}`} className="w-full border-0 focus:ring-0 focus:ring-offset-0">
+                        <SelectValue placeholder="Select a type">
+                          <div className="flex items-center text-muted-foreground">
+                            <span>{currentType}</span>
+                          </div>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(iconMap).map(([type, icon]) => (
+                          <SelectItem key={type} value={type}>
+                            <div className="flex items-center">
+                              <span className="mr-2 flex-shrink-0">{icon}</span>
+                              <span>{type}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                {(() => {
-                  switch (field.type) {
-                    case "checkbox": {
-                      return (
-                        <DataTableFilterCheckobox table={table} {...field} />
-                      );
+                <div className="px-4 my-3">
+                  <Separator className="w-2/3 mx-auto" />
+                </div>
+                <div className="mt-2">
+                  {(() => {
+                    switch (field.type) {
+                      case "checkbox": {
+                        return (
+                          <DataTableFilterCheckobox table={table} {...field} />
+                        );
+                      }
+                      case "slider": {
+                        return <DataTableFilterSlider table={table} {...field} />;
+                      }
+                      case "input": {
+                        return <DataTableFilterInput table={table} {...field} />;
+                      }
+                      case "timerange": {
+                        return (
+                          <DataTableFilterTimerange table={table} {...field} />
+                        );
+                      }
                     }
-                    case "slider": {
-                      return <DataTableFilterSlider table={table} {...field} />;
-                    }
-                    case "input": {
-                      return <DataTableFilterInput table={table} {...field} />;
-                    }
-                    case "timerange": {
-                      return (
-                        <DataTableFilterTimerange table={table} {...field} />
-                      );
-                    }
-                  }
-                })()}
+                  })()}
+                </div>
               </AccordionContent>
             </AccordionItem>
           );
