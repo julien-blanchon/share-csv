@@ -38,6 +38,7 @@
     "@supabase/supabase-js": "^2.45.4",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-table": "^8.20.5",
+    "@types/lodash": "^4.17.7",
     "@types/papaparse": "^5.3.14",
     "boring-avatars": "^1.11.1",
     "class-variance-authority": "^0.7.0",
