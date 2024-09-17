@@ -114,7 +114,6 @@ const filterTypeMap: Record<ColumnType, string> = {
   boolean: "checkbox",
   date: "timerange",
   url: "input",
-  url_preview: "input",
   tags: "checkbox",
   images: "input",
 };

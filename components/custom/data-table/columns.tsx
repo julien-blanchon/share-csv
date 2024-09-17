@@ -73,19 +73,6 @@ export const makeColumns = (columnDefinition: ColumnDefinitionType): ColumnDef<a
           cell: ({ row }) => {
             const value = row.getValue(key) as string;
             return (
-              <a href={value} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:no-underline transition-all">
-                {value}
-              </a>
-            );
-          },
-        } as ColumnDef<any>;
-
-      case "url_preview":
-        return {
-          ...baseColumn,
-          cell: ({ row }) => {
-            const value = row.getValue(key) as string;
-            return (
               <LinkPreview url={value} className="underline underline-offset-2 hover:no-underline transition-all">
                 {value}
               </LinkPreview>
