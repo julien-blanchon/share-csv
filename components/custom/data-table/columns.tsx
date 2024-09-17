@@ -102,28 +102,6 @@ export const makeColumns: (columnDefinition: ColumnDefinitionType) => ColumnDef<
           // },
           cell: ({ row }) => {
             const value = row.getValue(key) as string;
-            return <a href={value} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:no-underline transition-all">
-              {value}
-            </a>
-          }
-          // filterFn: (row, id, value) => "auto"(row, id, value),
-        } as ColumnDef<string>;
-      case "url_preview":
-        return {
-          id: key,
-          accessorKey: key,
-          header: ({ column }) => (
-            <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-          ),
-          filterFn: "auto",
-          // cell: ({ row }) => {
-          //   const value = row.getValue(key) as string;
-          //   return <a href={value} target="_blank" rel="noopener noreferrer">
-          //     {value}
-          //   </a>
-          // },
-          cell: ({ row }) => {
-            const value = row.getValue(key) as string;
             return <LinkPreview url={value} className="underline underline-offset-2 hover:no-underline transition-all"
             >{value}</LinkPreview>
           }

@@ -8,7 +8,7 @@ export const SPACE_DELIMITER = "_";
 export const RANGE_DELIMITER = "-";
 
 /** Column types definition */
-export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "url_preview" | "tags" | "images";
+export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags" | "images";
 export type ColumnDefinitionType = Record<string, ColumnType>;
 
 /** Predefined enums */
@@ -40,7 +40,6 @@ const getColumnSchema = (type: ColumnType) => {
       return z.boolean();
     case "date":
       return z.date();
-    case "url_preview":
     case "url":
       return z.string().url();
     case "tags":
@@ -97,7 +96,6 @@ const getFilterSchema = (type: ColumnType) => {
             .pipe(z.coerce.date().array())
         )
         .optional();
-    case "url_preview":
     case "url":
       return z.string().optional();
     case "tags":

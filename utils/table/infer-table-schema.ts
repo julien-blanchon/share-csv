@@ -2,25 +2,25 @@ import { ColumnDefinitionType, ColumnType } from "@/components/custom/data-table
 
 // Function to detect basic types
 function detectColumnType(value: string | number | boolean | string[] | Date): ColumnType {
-    if (typeof value === 'string' && value.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i)) {
-      return "images";
-    }
-    if (typeof value === 'string' && value.match(/^https?:\/\/.+/)) {
-      return "url_preview";
-    }
-    if (Array.isArray(value)) {
-      return "tags";
-    }
-    if (typeof value === "boolean") {
-      return "boolean";
-    }
-    if (typeof value === "number") {
-      return "number";
-    }
-    if (value instanceof Date || (typeof value === "string" && !isNaN(Date.parse(value)))) {
-      return "date";
-    }
-    return "string";
+  if (typeof value === 'string' && value.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i)) {
+    return "images";
+  }
+  if (typeof value === 'string' && value.match(/^https?:\/\/.+/)) {
+    return "url";
+  }
+  if (Array.isArray(value)) {
+    return "tags";
+  }
+  if (typeof value === "boolean") {
+    return "boolean";
+  }
+  if (typeof value === "number") {
+    return "number";
+  }
+  if (value instanceof Date || (typeof value === "string" && !isNaN(Date.parse(value)))) {
+    return "date";
+  }
+  return "string";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

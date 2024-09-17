@@ -48,7 +48,6 @@ const iconMap: Record<ColumnType, React.ReactNode> = {
   boolean: <CheckSquare className="h-4 w-4" />,
   date: <Calendar className="h-4 w-4" />,
   url: <Link className="h-4 w-4" />,
-  url_preview: <Link2 className="h-4 w-4" />,
   tags: <Tag className="h-4 w-4" />,
   images: <FileImage className="h-4 w-4" />,
 };
@@ -122,7 +121,7 @@ export function DataTableFilterControls<TData>({
 
               <AccordionContent className="-m-4 p-4">
                 <div>
-                  <ToggleGroup type="single" className="my-2 mx-2 pb-2 grid grid-cols-4 gap-1" 
+                  <ToggleGroup type="single" className="my-2 mx-2 pb-2 grid grid-cols-4 gap-1"
                     onValueChange={(value) => {
                       handleColumnTypeChange(field.value as string, value.toString() as ColumnType);
                     }}>
@@ -186,19 +185,6 @@ export function DataTableFilterControls<TData>({
                           </TooltipTrigger>
                           <TooltipContent>
                             URL
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem className="border border-border" value="url_preview" aria-label="Toggle URL Preview">
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link2 className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            URL Preview
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
