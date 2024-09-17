@@ -11,10 +11,6 @@ export const RANGE_DELIMITER = "-";
 export type ColumnType = "string" | "number" | "boolean" | "date" | "url" | "tags" | "images";
 export type ColumnDefinitionType = Record<string, ColumnType>;
 
-/** Predefined enums */
-export const REGIONS = ["ams", "gru", "syd", "hkg", "fra", "iad"] as const;
-export const TAGS = ["web", "api", "enterprise", "app"] as const;
-
 /** Helper function to convert strings to booleans */
 const stringToBoolean = z
   .string()
@@ -100,13 +96,9 @@ const getFilterSchema = (type: ColumnType) => {
       return z.string().optional();
     case "tags":
       return z
-        .enum(TAGS)
-        .or(
-          z
-            .string()
-            .transform((val) => val.split(ARRAY_DELIMITER))
-            .pipe(z.enum(TAGS).array())
-        )
+        .string()
+        .transform((val) => val.split(ARRAY_DELIMITER))
+        .array()
         .optional();
     case "images":
       return z
