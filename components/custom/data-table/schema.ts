@@ -49,7 +49,7 @@ const getColumnSchema = (type: ColumnType) => {
 export const createColumnSchema = (columnDefinition: ColumnDefinitionType) => {
   const schema = z.object(
     Object.fromEntries(
-      Object.entries(columnDefinition).map(([key, { position, type }]) => [ // Destructured to get position and type
+      Object.entries(columnDefinition).map(([key, { position, type }]) => [
         key,
         getColumnSchema(type),
       ])
@@ -114,15 +114,13 @@ export const createFilterSchema = (columnDefinition: ColumnDefinitionType) => {
   const schema = z.object(
     Object.fromEntries(
       Object.entries(columnDefinition)
-        .sort(([, a], [, b]) => a.position - b.position) // Sort by position
-        .map(([key, { type }]) => [ // Destructured to get type
+        .sort(([, a], [, b]) => a.position - b.position)
+        .map(([key, { type }]) => [
           key,
           getFilterSchema(type),
         ])
     )
   );
-
-  console.log(schema)
 
   return schema;
 }

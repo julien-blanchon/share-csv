@@ -34,7 +34,7 @@ export default function Page({
     const handleColumnTypeChange = (column: string, type: ColumnType) => {
         setColumnDefinition((prev) => ({
             ...prev,
-            [column]: type,
+            [column]: { position: prev[column]?.position || 0, type }, // Updated to match new format
         }));
     };
 
@@ -64,11 +64,11 @@ export default function Page({
                 if (fileSchemaError) throw fileSchemaError;
 
                 const defaultColumnTypes = Object.fromEntries(
-                    Object.keys(parsedData[0]).map((key) => [key, "string"])
+                    Object.keys(parsedData[0]).map((key, index) => [key, { position: index, type: "string" }]) // Updated to new format
                 ) as ColumnDefinitionType;
 
                 const newColumnTypes = (fileSchemaData.schema || defaultColumnTypes) as ColumnDefinitionType;
-                
+
                 setColumnDefinition(newColumnTypes);
                 setColumns(makeColumns(newColumnTypes));
             } catch (err) {

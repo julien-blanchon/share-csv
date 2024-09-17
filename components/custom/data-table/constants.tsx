@@ -25,7 +25,8 @@ const createLabel = (key: string) => {
 
 export const makeFilterFields = (columnDefinition: ColumnDefinitionType, data: Record<string, unknown>[]
 ) => Object.keys(columnDefinition).map((key) => {
-  const type = columnDefinition[key];
+  const col = columnDefinition[key] as { position: number; type: ColumnType };
+  const type = col["type"]
 
   const baseField = {
     label: createLabel(key),

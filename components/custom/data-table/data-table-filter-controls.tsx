@@ -111,7 +111,7 @@ export function DataTableFilterControls<TData>({
           ?.map(({ value }) => value as string)}
       >
         {filterFields?.map((field) => {
-          const currentType = columnDefinition[field.value as string];
+          const currentType = columnDefinition[field.value as string]["type"];
           return (
             <AccordionItem
               key={field.value as string}
@@ -120,7 +120,7 @@ export function DataTableFilterControls<TData>({
             >
               <AccordionTrigger className="p-2 hover:no-underline">
                 <div className="flex items-center gap-2">
-                  {iconMap[columnDefinition[field.value as string]]}
+                  {iconMap[columnDefinition[field.value as string]["type"]]}
                   <p className="text-sm font-medium text-foreground">
                     {field.label}
                   </p>
