@@ -80,7 +80,7 @@ export default function Page({
         };
 
         fetchData();
-    }, [supabase, uuid]);
+    }, [supabase, uuid, userId]); // Added userId to the dependency array
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

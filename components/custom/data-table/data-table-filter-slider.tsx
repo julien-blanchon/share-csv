@@ -23,9 +23,6 @@ export function DataTableFilterSlider<TData>({
   max,
 }: DataTableFilterSliderProps<TData>) {
   // Check if min and max are valid numbers
-  if (typeof min !== 'number' || isNaN(min) || typeof max !== 'number' || isNaN(max)) {
-    return null; // Return nothing if min or max is invalid
-  }
 
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
@@ -42,7 +39,7 @@ export function DataTableFilterSlider<TData>({
   }, [filterValue, min, max]);
 
   // Local state to update the slider value instantly
-  const [sliderValue, setSliderValue] = useState<number[]>(filters);
+  const [sliderValue, setSliderValue] = useState<number[]>(filters); // Moved outside of the conditional
 
   const updatePageSearchParams = useCallback(
     (values: Record<string, string | null>) => {
@@ -80,6 +77,10 @@ export function DataTableFilterSlider<TData>({
     },
     [sliderValue, min, max, debouncedHandleChange]
   );
+
+  if (typeof min !== 'number' || isNaN(min) || typeof max !== 'number' || isNaN(max)) {
+    return null; // Return nothing if min or max is invalid
+  }
 
   return (
     <div className="grid gap-2">
